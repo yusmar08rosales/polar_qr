@@ -1,0 +1,155 @@
+/*--------------
+Caja de inicio
+---------------*/
+.Container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgb(4, 4, 166);
+  background: linear-gradient(90deg, rgba(4, 4, 166, 1) 20%, rgba(0, 96, 205, 1) 55%, rgba(5, 159, 236, 1) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .input-linea {
+    width: 14%;
+    padding: 10px 0;
+    margin-top: 5px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    font-size: 18px;
+    color: #000000;
+    background-color: #cccaca;
+    margin-left: 2%;
+    margin-top: 4%;
+    text-align: center;
+  }
+
+  .texto {
+    text-align: center;
+  }
+
+  .modal {
+    width: 50vw;
+    height: auto;
+    padding: 1rem;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+
+    &_header {
+      position: relative;
+      border-bottom: 1px solid #ffffff;
+
+      .close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: transparent;
+      }
+    }
+
+    &_content {
+      border-bottom: 1px solid #ffffff;
+      padding: 2rem 0;
+    }
+
+    &_footer {
+      padding: 2rem 0;
+      padding-bottom: 0;
+
+      .boton-esp {
+        top: 0;
+        bottom: 0;
+        left: 2%;
+
+        &:hover {
+          background-color: rgb(4, 122, 182);
+        }
+      }
+    }
+  }
+}
+
+.imgBox {
+  position: relative;
+  min-width: 50px;
+  height: 122px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin: 0% 40% 5% 40%;
+}
+
+.boton {
+  margin-left: 30% !important;
+  padding: 10px 80px !important;
+  background-color: #1976d2 !important;
+  border-radius: 20px !important;
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+}
+
+.desbloq{
+  color: #17314a;
+  text-decoration: underline !important;
+  float: right;
+}
+.desbloq:hover{
+  color: #fff;
+}
+
+.icon-button-no-outline {
+  &:focus {
+    outline: none;
+  }
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root{
+  color: #fff9f9 !important;
+}
+
+.custom-text-field .MuiOutlinedInput-root {
+  & fieldset {
+    border-color: rgb(255, 251, 251); 
+  }
+
+  &:hover fieldset {
+    border-color: rgb(177, 177, 255); 
+  }
+
+  &.Mui-focused fieldset {
+    border-color: rgb(255, 255, 255);
+  }
+
+  .MuiInputBase-input {
+    color: white !important;
+  }
+}
+
+.button-back{
+  color: #fff;
+}
+@media screen and (max-width: 1200px) {
+  .texto {
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .modal {
+    width: 80vw;
+    height: auto;
+    background-color: #ffffff00;
+    padding: 1rem;
+  }
+  .imgBox {
+    position: relative;
+    min-width: 50px;
+    height: 105px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 0% 35% 5% 35%;
+  }
+  .boton {
+    margin-left: 13% !important;
+  }
+}
