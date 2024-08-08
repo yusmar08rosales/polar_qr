@@ -117,7 +117,7 @@ app.post("/verificarCodigo", async (req, res) => {
       await usuarioEncontrado.save();
 
       let token;
-      if (usuarioEncontrado.role === "admin" || usuarioEncontrado.role === "user" || usuarioEncontrado.role === "users") {
+      if (usuarioEncontrado.role === "admin" || usuarioEncontrado.role === "user") {
         token = jwt.sign(
           {
             user: usuarioEncontrado.user,

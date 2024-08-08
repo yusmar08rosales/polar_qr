@@ -153,8 +153,6 @@ function App() {
       navigate("/registro", { state: { name_product: user.name_product } });
     } else if (user.rol === "user") {
       navigate("/usuario", { state: { name_product: user.name_product } });
-    } else if (user.rol === "users") {
-      navigate("/users", { state: { name_product: user.name_product } });
     }
   };
 
