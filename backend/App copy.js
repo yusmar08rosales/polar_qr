@@ -59,19 +59,43 @@ app.post("/ingreso", async (req, res) => {
       const isMatch = await bcrypt.compare(password, foundUser.password);
 
       if (isMatch) {
-        // Genera el token
-        const token = jwt.sign({ user: foundUser.user, role: foundUser.role }, "your_jwt_secret", { expiresIn: '1h' });
-
         // Restablecer intentos fallidos y bloqueo
         foundUser.loginAttempts = 0;
         foundUser.lockUntil = undefined;
-        foundUser.inicio = true; // Marca que el usuario ha iniciado sesión
         await foundUser.save();
 
-        return res.status(200).json({
-          message: "Código verificado correctamente.",
-          token: token,
-        });
+        // Generar y enviar el código de verificación
+        const codigoVerificacion = Math.floor(100000 + Math.random() * 900000).toString();
+        const codeExpiration = new Date();
+        codeExpiration.setMinutes(codeExpiration.getMinutes() + 10);
+
+        await User.updateOne(
+          { user },
+          {
+            $set: {
+              "codigo.verificationCode": codigoVerificacion,
+              "codigo.codeExpiration": codeExpiration,
+            },
+          }
+        );
+
+        // Envía el correo con el código de verificación
+        const correoEnviado = await enviarCorreo(foundUser.correo, codigoVerificacion);
+        console.log("Correo enviado:", correoEnviado);
+
+        if (correoEnviado) {
+          let respuesta = {
+            Message: "Código de verificación enviado al correo.",
+            correo: foundUser.correo,
+            role: foundUser.role,
+            name_product: foundUser.name_product,
+          };
+
+          res.json(respuesta);
+        } else {
+          console.log("Error al enviar el correo.");
+          res.status(500).json({ error: "No se pudo enviar el correo." });
+        }
       } else {
         foundUser.loginAttempts += 1;
         if (foundUser.loginAttempts >= MAX_ATTEMPTS) {
@@ -80,15 +104,15 @@ app.post("/ingreso", async (req, res) => {
         await foundUser.save();
         console.log("Intentos fallidos de inicio de sesión:", foundUser.loginAttempts);
 
-        return res.status(401).json({ Message: "Credenciales inválidas" });
+        res.status(401).json({ Message: "Credenciales inválidas" });
       }
     } else {
       console.log("Usuario no encontrado.");
-      return res.status(401).json({ Message: "Credenciales inválidas" });
+      res.status(401).json({ Message: "Credenciales inválidas" });
     }
   } catch (error) {
     console.error("Error al ingresar:", error);
-    return res.status(500).json({ Message: "Error interno del servidor" });
+    res.status(500).json({ Message: "Error interno del servidor" });
   }
 });
 
@@ -96,6 +120,7 @@ app.post("/ingreso", async (req, res) => {
 app.post("/verificarCodigo", async (req, res) => {
   const { user, codigo } = req.body;
   const MAX_ATTEMPTS = 3;
+  const LOCK_TIME = 2 * 60 * 60 * 1000; // 2 horas
 
   try {
     const usuarioEncontrado = await User.findOne({ user });
@@ -140,10 +165,10 @@ app.post("/verificarCodigo", async (req, res) => {
     } else {
       usuarioEncontrado.verificationAttempts += 1;
       if (usuarioEncontrado.verificationAttempts >= MAX_ATTEMPTS) {
-        usuarioEncontrado.lockUntil = Date.now(); // Bloquear inmediatamente
+        usuarioEncontrado.lockUntil = Date.now() + LOCK_TIME;
       }
       await usuarioEncontrado.save();
-      console.log("Intentos fallidos de inicio de sesión:", usuarioEncontrado.verificationAttempts);
+
       return res.status(401).json({ message: "Código incorrecto o expirado." });
     }
   } catch (error) {

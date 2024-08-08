@@ -9,21 +9,9 @@ import "./App.scss";
 function App() {
   const navigate = useNavigate();
   const { setUser, loginUser } = useAuth();
-  const [step, setStep] = useState(1);
-  const [correo, setCorreo] = useState("");
   const [values, setValues] = useState({
     user: "",
     password: "",
-    codigo: "",
-  });
-
-  const [codigo, setCodigo] = useState({
-    digito1: "",
-    digito2: "",
-    digito3: "",
-    digito4: "",
-    digito5: "",
-    digito6: "",
   });
 
   const handleChange = (event) => {
@@ -37,96 +25,52 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (step === 1) {
-      try {
-        const response = await axios.post("http://localhost:3000/ingreso", {
-          user: values.user,
-          password: values.password,
-        });
-        if (response.data.Message === "Código de verificación enviado al correo.") {
-          setStep(2);
-          setCorreo(response.data.correo);
-        }
-      } catch (error) {
-        console.error("Error al intentar iniciar sesión:", error);
-        if (error.response) {
-          const { Message } = error.response.data;
-          if (Message === "Ya posee una sesión activa") {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ya posee una sesión activa.',
-            });
-          } else if (Message === "Cuenta bloqueada. Intente de nuevo más tarde.") {
-            Swal.fire({
-              icon: 'error',
-              title: 'Usuario Bloqueado',
-              text: 'Cuenta bloqueada. Intente de nuevo más tarde.',
-            });
-          } else if (Message === "Credenciales inválidas") {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Credenciales inválidas',
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: Message || "Credenciales inválidas",
-            });
-          }
-        } else {
+    try {
+      const response = await axios.post("http://localhost:3000/ingreso", {
+        user: values.user,
+        password: values.password,
+      });
+      if (response.data.message === "Código verificado correctamente.") {
+        handleLoginSuccess(response.data);
+      } else {
+        console.log("Mensaje no esperado:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error al intentar iniciar sesión:", error);
+      if (error.response) {
+        const { Message } = error.response.data;
+        if (Message === "Ya posee una sesión activa") {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Error al intentar iniciar sesión. Por favor, inténtelo de nuevo.',
+            text: 'Ya posee una sesión activa.',
+          });
+        } else if (Message === "Cuenta bloqueada. Intente de nuevo más tarde.") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Usuario Bloqueado',
+            text: 'Cuenta bloqueada. Intente de nuevo más tarde.',
+          });
+        } else if (Message === "Credenciales inválidas") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Credenciales inválidas',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: Message || "Credenciales inválidas",
           });
         }
-      }
-    } else if (step === 2) {
-      verificarCodigo();
-    }
-  };
-
-  const verificarCodigo = async () => {
-    const codigoCompleto = Object.values(codigo).join("");
-    try {
-      const response = await axios.post("http://localhost:3000/verificarCodigo", {
-        user: values.user,
-        codigo: codigoCompleto,
-      });
-
-      if (response.data.message === "Código verificado correctamente.") {
-        handleLoginSuccess(response.data);
-      } else if (response.data.message === "Cuenta bloqueada. Intente de nuevo más tarde.") {
-        Swal.fire({
-          icon: 'error',
-          title: 'Usuario Bloqueado',
-          text: 'Cuenta bloqueada. Intente de nuevo más tarde.',
-        });
       } else {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: response.data.message,
-        });
-        setCodigo({
-          digito1: "",
-          digito2: "",
-          digito3: "",
-          digito4: "",
-          digito5: "",
-          digito6: "",
+          text: 'Error al intentar iniciar sesión. Por favor, inténtelo de nuevo.',
         });
       }
-    } catch (error) {
-      console.error("Error al verificar el código:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Error al verificar el código. Por favor, inténtelo de nuevo.',
-      });
     }
   };
 
@@ -143,7 +87,6 @@ function App() {
       user: userName
     };
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    console.log("userInfo:", userInfo);
     setUser(userInfo);
     redirigirSegunRol(userInfo);
   };
@@ -153,20 +96,6 @@ function App() {
       navigate("/registro", { state: { name_product: user.name_product } });
     } else if (user.rol === "user") {
       navigate("/usuario", { state: { name_product: user.name_product } });
-    } else if (user.rol === "users") {
-      navigate("/users", { state: { name_product: user.name_product } });
-    }
-  };
-
-  const handleCodigoChange = (event) => {
-    const { name, value } = event.target;
-    if (/^\d?$/.test(value)) {
-      setCodigo((prev) => ({ ...prev, [name]: value }));
-      if (value) {
-        const nextDigit = parseInt(name.charAt(name.length - 1), 10) + 1;
-        if (nextDigit <= 6)
-          document.querySelector(`input[name=digito${nextDigit}]`)?.focus();
-      }
     }
   };
 
@@ -175,21 +104,6 @@ function App() {
       handleSubmit(event);
     }
   };
-
-  const handleKeyDown = (event) => {
-    const { name, value } = event.target;
-
-    if (event.key === 'Enter') {
-      handleSubmit(event);
-    } else if (event.key === 'Backspace' && !value) {
-      const prevDigitIndex = parseInt(name.replace('digito', ''), 10) - 1;
-      if (prevDigitIndex >= 1) {
-        const prevDigitName = `digito${prevDigitIndex}`;
-        document.querySelector(`input[name=${prevDigitName}]`)?.focus();
-      }
-    }
-  };
-
   return (
     <>
       <div className="Container">
@@ -198,7 +112,6 @@ function App() {
             <img src="../perfil.jpg" className="imgBox" alt="" />
           </header>
 
-          {step === 1 && (
             <main className="modal_content">
               <TextField
                 className="custom-text-field"
@@ -236,30 +149,6 @@ function App() {
                 DESBLOQUEAR
               </Link>
             </main>
-          )}
-
-          {step === 2 && (
-            <main className="modal_content">
-              <p className="texto">
-                Se acaba de enviar a tu correo{" "}
-                <b className="correo">{correo}</b> el codigo de verificación,
-                por favor ingresalo a continuación:
-              </p>
-              {[1, 2, 3, 4, 5, 6].map((index) => (
-                <input
-                  className="input-linea"
-                  key={`digito${index}`}
-                  type="tel"
-                  margin="normal"
-                  variant="outlined"
-                  name={`digito${index}`}
-                  value={codigo[`digito${index}`]}
-                  onChange={handleCodigoChange}
-                  onKeyDown={handleKeyDown}
-                />
-              ))}
-            </main>
-          )}
 
           <footer className="modal_footer">
             <Button
