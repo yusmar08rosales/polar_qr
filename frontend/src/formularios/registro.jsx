@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import '../App.scss';
+//dependencias
+import Swal from "sweetalert2";
 import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Toolbar, AppBar } from "@mui/material";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Swal from "sweetalert2";
-
-import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+//componentes
+import SimpleBar from "../barras/SimpleBar";
+//iconos
 
 const Registro = () => {
     const [values, setValues] = useState({ user: '', password: '', correo: '', role: '' });
     const [objRoles, setObjRoles] = useState([]);
     const [products, setProducts] = useState([]);
     const [open, setOpen] = useState(false);
-    const { setUser } = useAuth();
-    const navigate = useNavigate();
 
     const getRoles = async () => {
         axios.get(`http://localhost:3000/roles`)
@@ -95,29 +92,11 @@ const Registro = () => {
         }
     }, [values.role, products]);
 
-    const handleLogout = async () => {
-        try {
-            const user = JSON.parse(localStorage.getItem('userInfo')).user;
-            await axios.post('http://localhost:3000/cierreSesion', { user });
-            localStorage.removeItem('userInfo');
-            setUser({});
-            navigate('/');
-        } catch (err) {
-            console.error("error al cerrar sesión: ", err);
-        }
-    };
-
     return (
         <>
             <div className="Container">
                 <div className="botones">
-                    <AppBar position="static" sx={{ background: "linear-gradient(90deg, rgba(8,96,205,1) 30%, rgba(2,129,250,1) 66%)" }}>
-                        <Toolbar>
-                            <Link className="button-back" /*to={"/"}*/ onClick={handleLogout}>
-                                <ArrowBackIcon />
-                            </Link>
-                        </Toolbar>
-                    </AppBar>
+                    <SimpleBar />
                 </div>
 
 

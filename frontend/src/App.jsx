@@ -93,7 +93,7 @@ function App() {
 
   const redirigirSegunRol = (user) => {
     if (user.rol === "admin") {
-      navigate("/registro", { state: { name_product: user.name_product } });
+      navigate("/lote", { state: { name_product: user.name_product } });
     } else if (user.rol === "user") {
       navigate("/usuario", { state: { name_product: user.name_product } });
     }

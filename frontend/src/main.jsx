@@ -13,6 +13,9 @@ import ProtectedRoute from './route/ProtectedRouter.jsx';
 import App from './App.jsx'
 import Registro from './formularios/registro.jsx';
 import Desbloqueo from './formularios/desbloqueo.jsx';
+import ListaLotes from './listadosLotes/ListLotes.jsx';
+import LoteListado from './listadosLotes/LoteListado.jsx';
+import AgregarLote from './formularios/AgregarLote.jsx';
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -27,6 +30,23 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 				<Route path='/registro' element={
 					<ProtectedRoute roles={['admin']}>
 						<Registro />
+					</ProtectedRoute>
+				} />
+
+				<Route path='/registroLote' element={
+					<ProtectedRoute roles={['admin']}>
+						<AgregarLote />
+					</ProtectedRoute>
+				} />
+
+				<Route path='/lote' element={
+					<ProtectedRoute roles={['admin']}>
+						<ListaLotes />
+					</ProtectedRoute>
+				} />
+				<Route path='/LoteListado' element={
+					<ProtectedRoute roles={['admin']}>
+						<LoteListado />
 					</ProtectedRoute>
 				} />
 			</Routes>

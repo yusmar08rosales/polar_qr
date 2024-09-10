@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+//componentes
 import '../App.scss';
-import { TextField, Button, Toolbar, AppBar } from "@mui/material";
+import { TextField, Button } from "@mui/material";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SimpleBar from "../barras/SimpleBar";
+//iconos
 import Swal from "sweetalert2";
 
 const Desbloqueo = () => {
@@ -13,7 +13,6 @@ const Desbloqueo = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [step, setStep] = useState(1);
-    const { setUser, loginUser } = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -173,13 +172,7 @@ const Desbloqueo = () => {
         <>
             <div className="Container">
                 <div className="botones">
-                    <AppBar position="static" sx={{ background: "linear-gradient(90deg, rgba(8,96,205,1) 30%, rgba(2,129,250,1) 66%)" }}>
-                        <Toolbar>
-                            <Link className="button-back" to={"/"}>
-                                <ArrowBackIcon />
-                            </Link>
-                        </Toolbar>
-                    </AppBar>
+                    <SimpleBar />
                 </div>
 
                 <div className="modal">
@@ -270,13 +263,13 @@ const Desbloqueo = () => {
                                 onChange={e => setNewPassword(e.target.value)}
                             />
                             <TextField
-                                 fullWidth
-                                 type='password'
-                                 color='primary'
-                                 margin='normal'
-                                 variant='outlined'
-                                 label='Contraseña'
-                                 placeholder='Contraseña'
+                                fullWidth
+                                type='password'
+                                color='primary'
+                                margin='normal'
+                                variant='outlined'
+                                label='Contraseña'
+                                placeholder='Contraseña'
                                 value={confirmPassword}
                                 onChange={e => setConfirmPassword(e.target.value)}
                             />
