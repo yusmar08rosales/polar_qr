@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-//componentes
+import React from "react";
 import SimpleBar from "../barras/SimpleBar";
-import { TextField, Button } from "@mui/material";
-//iconos
+import { TextField, Button, InputLabel, Input } from "@mui/material";
 
 const AgregarLote = () => {
 
@@ -20,84 +18,89 @@ const AgregarLote = () => {
 
                     <main className="modal_content">
                         <form /*onSubmit={handleSubmit}*/>
-                            <TextField
-                                fullWidth
-                                autoFocus
-                                type='text'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Lote'
-                                placeholder='Lote'
-                            //value={values.user}
-                            //onChange={e => setValues({ ...values, user: e.target.value })}
-                            />
-                            <TextField
-                                fullWidth
-                                type='email'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Lote de Fabricación'
-                                placeholder='Lote de Fabricación'
-                            //value={values.correo}
-                            //onChange={e => setValues({ ...values, correo: e.target.value })}
-                            />
-                            <TextField
-                                fullWidth
-                                type='email'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Fecha de embarque'
-                                placeholder='Fecha de embarque'
-                            //value={values.correo}
-                            //onChange={e => setValues({ ...values, correo: e.target.value })}
-                            />
-                            <TextField
-                                fullWidth
-                                type='email'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Destino de origen'
-                                placeholder='Destino de origen'
-                            //value={values.correo}
-                            //onChange={e => setValues({ ...values, correo: e.target.value })}
-                            />
-                            <TextField
-                                fullWidth
-                                type='email'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Número de embarque'
-                                placeholder='Número de embarque'
-                            //value={values.correo}
-                            //onChange={e => setValues({ ...values, correo: e.target.value })}
-                            />
-                            <TextField
-                                fullWidth
-                                type='email'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Codigo de SENIAT'
-                                placeholder='Codigo de SENIAT'
-                            //value={values.correo}
-                            //onChange={e => setValues({ ...values, correo: e.target.value })}
-                            />
-                            <TextField
-                                fullWidth
-                                type='email'
-                                color='primary'
-                                margin='normal'
-                                variant='outlined'
-                                label='Fecha de destino'
-                                placeholder='Fecha de destino'
-                            //value={values.correo}
-                            //onChange={e => setValues({ ...values, correo: e.target.value })}
-                            />
+                            {/* Agrupar los primeros 4 TextField */}
+                            <div className="form-row">
+                                <TextField
+                                    fullWidth
+                                    autoFocus
+                                    type='text'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Lote'
+                                    placeholder='Lote'
+                                />
+                                <TextField
+                                    fullWidth
+                                    type='email'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Lote de Fabricación'
+                                    placeholder='Lote de Fabricación'
+                                />
+                                <TextField
+                                    fullWidth
+                                    type='email'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Fecha de embarque'
+                                    placeholder='Fecha de embarque'
+                                />
+                                <TextField
+                                    fullWidth
+                                    type='email'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Destino de origen'
+                                    placeholder='Destino de origen'
+                                />
+                            </div>
+
+                            {/* Agrupar los siguientes 3 TextField */}
+                            <div className="form-row">
+                                <TextField
+                                    fullWidth
+                                    type='email'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Número de embarque'
+                                    placeholder='Número de embarque'
+                                />
+                                <TextField
+                                    fullWidth
+                                    type='email'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Codigo de SENIAT'
+                                    placeholder='Codigo de SENIAT'
+                                />
+                                <TextField
+                                    fullWidth
+                                    type='email'
+                                    color='primary'
+                                    margin='normal'
+                                    variant='outlined'
+                                    label='Fecha de desembarque'
+                                    placeholder='Fecha de desembarque'
+                                />
+                            </div>
+                            <div className="file-upload">
+                                <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
+                                <Input
+                                    id="upload-file"
+                                    type="file"
+                                    inputProps={{ accept: ".pdf,.doc,.docx,.png,.jpg" }}
+                                    fullWidth
+                                    className="custom-file-input"
+                                    color="primary"
+                                />
+
+                            </div>
                             <Button
                                 color="primary"
                                 className="boton-esp"

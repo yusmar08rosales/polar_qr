@@ -5,7 +5,7 @@ import '../tabla.css'
 import BarraSeniat from "../barras/BarraSeniat";
 
 //dependecias
-import { TextField, Button, InputAdornment, Tooltip } from "@mui/material";
+import { TextField, Button, InputAdornment } from "@mui/material";
 
 //componented de tabla de los productos
 import Table from '@mui/material/Table';
@@ -18,7 +18,6 @@ import TableRow from '@mui/material/TableRow';
 
 //iconos
 import SearchIcon from "@mui/icons-material/Search";
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import { useNavigate } from "react-router-dom";
 
 const ListaLoteSeniat = () => {
@@ -35,11 +34,6 @@ const ListaLoteSeniat = () => {
 
                 <div className="list">
                     <div className="filtro">
-                        <Tooltip title={"escanear QR"}>
-                            <Button /*onClick={handleAgregarLote}*/>
-                                <QrCodeScannerIcon />
-                            </Button>
-                        </Tooltip>
                         <TextField
                             fullWidth
                             autoFocus

@@ -33,6 +33,10 @@ const BarraSupe = () => {
         navigate('/registro');
     };
 
+    const handleHistory = async () => {
+        navigate('/History');
+    };
+
     return (
         <>
             <AppBar position="static" sx={{ background: "linear-gradient(90deg, rgba(8,96,205,1) 30%, rgba(2,129,250,1) 66%)" }}>
@@ -44,7 +48,7 @@ const BarraSupe = () => {
                     </Tooltip>
                     <div style={{ flexGrow: 1 }}></div>
                     <Tooltip title={"historico de modificaciones"}>
-                        <Button color="inherit">
+                        <Button color="inherit" onClick={handleHistory}>
                             <DensityMediumIcon />
                         </Button>
                     </Tooltip>

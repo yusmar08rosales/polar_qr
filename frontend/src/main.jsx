@@ -17,9 +17,9 @@ import Desbloqueo from './formularios/desbloqueo.jsx';
 import ListaLotes from './listadosLotes/ListLotes.jsx';
 import LoteListado from './listadosLotes/LoteListado.jsx';
 import AgregarLote from './formularios/AgregarLote.jsx';
-import AddProduct from './formularios/AgregarProducto.jsx';
 import ListaLoteSeniat from './listadosLotes/ListaLoteSeniat.jsx';
 import ListaProductSeniat from './listadosLotes/ListaProductSeniat.jsx';
+import History from './listadosLotes/History.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 	<AuthProvider>
@@ -37,14 +37,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 				} />
 
 				<Route path='/registroLote' element={
-					<ProtectedRoute roles={['admin']}>
+					<ProtectedRoute roles={['admin', 'pasante']}>
 						<AgregarLote />
-					</ProtectedRoute>
-				} />
-
-				<Route path='/registroProduct' element={
-					<ProtectedRoute roles={['admin']}>
-						<AddProduct />
 					</ProtectedRoute>
 				} />
 
@@ -58,13 +52,18 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 						<LoteListado />
 					</ProtectedRoute>
 				} />
+				<Route path='/History' element={
+					<ProtectedRoute roles={['admin']}>
+						<History />
+					</ProtectedRoute>
+				} />
 				<Route path='/ListadoLote' element={
-					<ProtectedRoute roles={['user']}>
+					<ProtectedRoute roles={['seniat']}>
 						<ListaLoteSeniat />
 					</ProtectedRoute>
 				} />
 				<Route path='/ListadoProducto' element={
-					<ProtectedRoute roles={['user']}>
+					<ProtectedRoute roles={['seniat']}>
 						<ListaProductSeniat />
 					</ProtectedRoute>
 				} />
