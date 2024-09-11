@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children, roles }) => {
     if (!user || !user.rol) {
         return <Navigate to="/" />;
     } else if (!roles.includes(user.rol)) {
-        return <Navigate to={user.rol === 'admin' ? '/admin' : '/usuario'} />;
+        return <Navigate to={user.rol === 'admin' ? '/lote' : user.rol === 'seniat' ? '/ListadoLote' : '/registroLote'} />;
     }
 
     return children;

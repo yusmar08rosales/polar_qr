@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import '../tabla.css'
 
 //componentes
-import BarraSimple from "../barras/BarraSimple";
+import BarraSeniat from "../barras/BarraSeniat";
+
+//dependecias
+import { TextField, Button, InputAdornment, Tooltip } from "@mui/material";
 
 //componented de tabla de los productos
 import Table from '@mui/material/Table';
@@ -11,32 +15,29 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-//dependencias
-import { TextField, Button, InputAdornment, Tooltip } from "@mui/material";
 
 //iconos
 import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
-import DeleteIcon from '@mui/icons-material/Delete';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import { useNavigate } from "react-router-dom";
 
-const LoteListado = () => {
- const navigate = useNavigate;
+const ListaLoteSeniat = () => {
+    const navigate = useNavigate();
 
- const handleAgregarProduct = () => {
-    navigate('/registroProduct');
- }
+    const handleLote = () => {
+        navigate('/ListadoProducto')
+    }
+
     return (
         <>
             <div className="container">
-                <BarraSimple />
+                <BarraSeniat />
 
                 <div className="list">
                     <div className="filtro">
-                        <Tooltip title={"agregar lote"}>
-                            <Button onClick={handleAgregarProduct}>
-                                <AddIcon />
+                        <Tooltip title={"escanear QR"}>
+                            <Button /*onClick={handleAgregarLote}*/>
+                                <QrCodeScannerIcon />
                             </Button>
                         </Tooltip>
                         <TextField
@@ -66,16 +67,19 @@ const LoteListado = () => {
                                     <TableRow>
                                         <TableCell>Item de Lote</TableCell>
                                         <TableCell>Lote de fabricación</TableCell>
-                                        <TableCell>Fecha de vencimiento</TableCell>
-                                        <TableCell>Fecha de fabricación</TableCell>
-                                        <TableCell>Modificar</TableCell>
-                                        <TableCell>Eliminar</TableCell>
+                                        <TableCell>Fecha de embarque</TableCell>
+                                        <TableCell>Origen</TableCell>
+                                        <TableCell>Número de embarque</TableCell>
+                                        <TableCell>Codigo de SENIAT</TableCell>
+                                        <TableCell>Fecha de desembarque</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
                                         <TableCell>
-                                            Caja 1
+                                            <Button className="button-product" onClick={handleLote}>
+                                                Lote 1
+                                            </Button>
                                         </TableCell>
                                         <TableCell>
                                             A65BF9NH
@@ -84,13 +88,16 @@ const LoteListado = () => {
                                             23 DE FEB. DE 2024
                                         </TableCell>
                                         <TableCell>
+                                            Holanda
+                                        </TableCell>
+                                        <TableCell>
+                                            346598
+                                        </TableCell>
+                                        <TableCell>
+                                            34b87uy2
+                                        </TableCell>
+                                        <TableCell>
                                             15 de Marzo de 2024
-                                        </TableCell>
-                                        <TableCell>
-                                            <CreateIcon />
-                                        </TableCell>
-                                        <TableCell>
-                                            <DeleteIcon />
                                         </TableCell>
                                     </TableRow>
                                 </TableBody>
@@ -100,6 +107,6 @@ const LoteListado = () => {
                 </div>
             </div>
         </>
-    )
-}
-export default LoteListado;
+    );
+};
+export default ListaLoteSeniat;

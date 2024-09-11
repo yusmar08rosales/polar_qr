@@ -1,4 +1,5 @@
 import React from 'react'
+import './index.css'
 import ReactDOM from 'react-dom/client'
 
 import '@fontsource/roboto/300.css';
@@ -16,7 +17,9 @@ import Desbloqueo from './formularios/desbloqueo.jsx';
 import ListaLotes from './listadosLotes/ListLotes.jsx';
 import LoteListado from './listadosLotes/LoteListado.jsx';
 import AgregarLote from './formularios/AgregarLote.jsx';
-import './index.css'
+import AddProduct from './formularios/AgregarProducto.jsx';
+import ListaLoteSeniat from './listadosLotes/ListaLoteSeniat.jsx';
+import ListaProductSeniat from './listadosLotes/ListaProductSeniat.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 	<AuthProvider>
@@ -39,6 +42,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 					</ProtectedRoute>
 				} />
 
+				<Route path='/registroProduct' element={
+					<ProtectedRoute roles={['admin']}>
+						<AddProduct />
+					</ProtectedRoute>
+				} />
+
 				<Route path='/lote' element={
 					<ProtectedRoute roles={['admin']}>
 						<ListaLotes />
@@ -47,6 +56,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 				<Route path='/LoteListado' element={
 					<ProtectedRoute roles={['admin']}>
 						<LoteListado />
+					</ProtectedRoute>
+				} />
+				<Route path='/ListadoLote' element={
+					<ProtectedRoute roles={['user']}>
+						<ListaLoteSeniat />
+					</ProtectedRoute>
+				} />
+				<Route path='/ListadoProducto' element={
+					<ProtectedRoute roles={['user']}>
+						<ListaProductSeniat />
 					</ProtectedRoute>
 				} />
 			</Routes>

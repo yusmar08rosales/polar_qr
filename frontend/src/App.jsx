@@ -94,8 +94,10 @@ function App() {
   const redirigirSegunRol = (user) => {
     if (user.rol === "admin") {
       navigate("/lote", { state: { name_product: user.name_product } });
-    } else if (user.rol === "user") {
-      navigate("/usuario", { state: { name_product: user.name_product } });
+    } else if (user.rol === "seniat") {
+      navigate("/ListadoLote", { state: { name_product: user.name_product } });
+    }else{
+      navigate("/registroLote", { state: { name_product: user.name_product } })
     }
   };
 

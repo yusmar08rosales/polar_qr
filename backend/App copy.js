@@ -195,6 +195,8 @@ app.post("/cierreSesion", async (req, res) => {
           $set: { inicio: false },
         }
       );
+      console.log(foundUser);
+      
       res.json({ message: "Cierre de sesión exitoso" });
     } else {
       res.status(404).json({ message: "Usuario no encontrado" });

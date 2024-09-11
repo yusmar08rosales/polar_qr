@@ -5,7 +5,7 @@ import { TextField, Button } from "@mui/material";
 //iconos
 import SimpleBar from "../barras/SimpleBar";
 
-const addProduct = () => {
+const AddProduct = () => {
 
     return (
         <>
@@ -114,4 +114,4 @@ const addProduct = () => {
         </>
     )
 }
-export default addProduct;
+export default AddProduct;

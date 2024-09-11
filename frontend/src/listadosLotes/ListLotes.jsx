@@ -73,10 +73,10 @@ const ListaLotes = () => {
                                         <TableCell>Item de Lote</TableCell>
                                         <TableCell>Lote de fabricación</TableCell>
                                         <TableCell>Fecha de embarque</TableCell>
-                                        <TableCell>Destino de origen</TableCell>
+                                        <TableCell>Origen</TableCell>
                                         <TableCell>Número de embarque</TableCell>
                                         <TableCell>Codigo de SENIAT</TableCell>
-                                        <TableCell>Fecha de destino</TableCell>
+                                        <TableCell>Fecha de desembarque</TableCell>
                                         <TableCell>Modificar</TableCell>
                                         <TableCell>Eliminar</TableCell>
                                     </TableRow>

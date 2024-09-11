@@ -12,21 +12,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 //dependencias
-import { TextField, Button, InputAdornment, Tooltip } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 
 //iconos
 import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from "react-router-dom";
 
-const LoteListado = () => {
- const navigate = useNavigate;
+const ListaProductSeniat = () => {
 
- const handleAgregarProduct = () => {
-    navigate('/registroProduct');
- }
     return (
         <>
             <div className="container">
@@ -34,11 +26,6 @@ const LoteListado = () => {
 
                 <div className="list">
                     <div className="filtro">
-                        <Tooltip title={"agregar lote"}>
-                            <Button onClick={handleAgregarProduct}>
-                                <AddIcon />
-                            </Button>
-                        </Tooltip>
                         <TextField
                             fullWidth
                             autoFocus
@@ -68,8 +55,6 @@ const LoteListado = () => {
                                         <TableCell>Lote de fabricación</TableCell>
                                         <TableCell>Fecha de vencimiento</TableCell>
                                         <TableCell>Fecha de fabricación</TableCell>
-                                        <TableCell>Modificar</TableCell>
-                                        <TableCell>Eliminar</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -86,12 +71,6 @@ const LoteListado = () => {
                                         <TableCell>
                                             15 de Marzo de 2024
                                         </TableCell>
-                                        <TableCell>
-                                            <CreateIcon />
-                                        </TableCell>
-                                        <TableCell>
-                                            <DeleteIcon />
-                                        </TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -102,4 +81,4 @@ const LoteListado = () => {
         </>
     )
 }
-export default LoteListado;
+export default ListaProductSeniat;

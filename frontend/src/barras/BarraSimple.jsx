@@ -15,10 +15,16 @@ const BarraSimple = () => {
     const { setUser } = useAuth();
 
     //boton de cierre de sesión 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        setUser({});
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            const user = JSON.parse(localStorage.getItem('userInfo')).user;
+            await axios.post('http://localhost:3000/cierreSesion', { user });
+            localStorage.removeItem('userInfo');
+            setUser({});
+            navigate('/');
+        } catch (err) {
+            console.error("error al cerrar sesión: ", err);
+        }
     };
 
     const handleRegreso = async () => {
