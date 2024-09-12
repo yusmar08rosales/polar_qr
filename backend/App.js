@@ -159,19 +159,24 @@ app.post("/cierreSesion", async (req, res) => {
   try {
     const { user } = req.body;
 
-    // Busca el usuario por su nombre de usuario
+    // Verificar si el usuario fue enviado en el cuerpo de la solicitud
+    if (!user) {
+      return res.status(400).json({ message: "El usuario es requerido" });
+    }
+
+    // Buscar el usuario por su nombre de usuario
     const foundUser = await User.findOne({ user });
 
     if (foundUser) {
-      // Actualiza el campo "inicio" a false
+      // Actualizar el campo "inicio" a false para cerrar sesión
       await User.updateOne(
         { user },
         {
           $set: { inicio: false },
         }
       );
-      console.log("cierre", foundUser);
-      
+      console.log("Cierre de sesión para:", foundUser);
+
       res.json({ message: "Cierre de sesión exitoso" });
     } else {
       res.status(404).json({ message: "Usuario no encontrado" });
@@ -181,6 +186,7 @@ app.post("/cierreSesion", async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
+
 
 /*-----------------------------
     formulario de desbloqueo

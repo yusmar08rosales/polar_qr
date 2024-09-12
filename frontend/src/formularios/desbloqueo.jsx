@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-//componentes
 import '../App.scss';
-import { TextField, Button } from "@mui/material";
 import axios from "axios";
-import SimpleBar from "../barras/SimpleBar";
+
+//componentes
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Toolbar, AppBar, Tooltip } from "@mui/material";
 //iconos
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+//dependencia
 import Swal from "sweetalert2";
 
 const Desbloqueo = () => {
@@ -13,6 +16,7 @@ const Desbloqueo = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [step, setStep] = useState(1);
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -168,11 +172,23 @@ const Desbloqueo = () => {
         }
     };
 
+    const handleRegreso = async () => {
+        navigate('/');
+    };
+
     return (
         <>
             <div className="Container">
                 <div className="botones">
-                    <SimpleBar />
+                    <AppBar position="static" sx={{ background: "linear-gradient(90deg, rgba(8,96,205,1) 30%, rgba(2,129,250,1) 66%)" }}>
+                        <Toolbar>
+                            <Tooltip title={"regreso a la tabla de lotes"}>
+                                <Button color="inherit" onClick={handleRegreso}>
+                                    <ArrowBackIcon />
+                                </Button>
+                            </Tooltip>
+                        </Toolbar>
+                    </AppBar>
                 </div>
 
                 <div className="modal">

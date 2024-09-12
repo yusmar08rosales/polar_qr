@@ -17,30 +17,25 @@ const SimpleBar = () => {
     const userRole = user.rol;
     console.log(userRole);
     
-
     const handleLogout = async () => {
         try {
-            // Verifica si 'userInfo' está en localStorage
-            const userInfo = localStorage.getItem('userInfo');
-            if (userInfo) {
-                // Si 'userInfo' existe, obtén el usuario
-                const users = JSON.parse(userInfo).user;
-                
-                // Envía la solicitud de cierre de sesión
-                await axios.post('http://localhost:3000/cierreSesion', { users });
-                
-                // Limpia el almacenamiento local y actualiza el estado del usuario
-                localStorage.removeItem('userInfo');
-                setUser({});
-                navigate('/');
-            } else {
-                setUser({});
-                navigate('/');
-            }
+          const userInfo = localStorage.getItem('userInfo');
+          if (userInfo) {
+            const users = JSON.parse(userInfo).user;
+            await axios.post('http://localhost:3000/cierreSesion', { user: users });
+            localStorage.removeItem('userInfo');
+            setUser({});
+            navigate('/');
+          } else {
+            console.error('No user info found in localStorage');
+            setUser({});
+            navigate('/');
+          }
         } catch (err) {
-            console.error("Error al cerrar sesión: ", err);
+          console.error("Error al cerrar sesión: ", err);
         }
-    };
+      };
+      
     
 
     const handleRegreso = async () => {
