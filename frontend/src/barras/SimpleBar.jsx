@@ -22,7 +22,7 @@ const SimpleBar = () => {
           const userInfo = localStorage.getItem('userInfo');
           if (userInfo) {
             const users = JSON.parse(userInfo).user;
-            await axios.post('http://localhost:3000/cierreSesion', { user: users });
+            await axios.post('https://backendpaginaqr-production.up.railway.app/cierreSesion', { user: users });
             localStorage.removeItem('userInfo');
             setUser({});
             navigate('/');

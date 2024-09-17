@@ -15,7 +15,7 @@ const Registro = () => {
     const [open, setOpen] = useState(false);
 
     const getRoles = async () => {
-        axios.get(`http://localhost:3000/roles`)
+        axios.get(`https://backendpaginaqr-production.up.railway.app/roles`)
             .then(res => {
                 setObjRoles(res.data.objData);
             });
@@ -46,7 +46,7 @@ const Registro = () => {
             );
             return;
         }
-        axios.post('http://localhost:3000/registro', values)
+        axios.post('https://backendpaginaqr-production.up.railway.app/registro', values)
             .then(res => {
                 Swal.fire(
                     {
@@ -117,6 +117,7 @@ const Registro = () => {
                                 label='Usuario'
                                 placeholder='Usuario'
                                 value={values.user}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                 onChange={e => setValues({ ...values, user: e.target.value })}
                             />
                             <TextField
@@ -128,6 +129,7 @@ const Registro = () => {
                                 label='Contraseña'
                                 placeholder='Contraseña'
                                 value={values.password}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                 onChange={e => setValues({ ...values, password: e.target.value })}
                             />
                             <TextField
@@ -139,6 +141,7 @@ const Registro = () => {
                                 label='Correo'
                                 placeholder='Correo'
                                 value={values.correo}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                 onChange={e => setValues({ ...values, correo: e.target.value })}
                             />
                             <FormControl fullWidth>
@@ -147,6 +150,7 @@ const Registro = () => {
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={values.role}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                     label="Rol"
                                     onChange={e => setValues({ ...values, role: e.target.value })}
                                 >

@@ -17,7 +17,7 @@ const BarraSeniat = () => {
     const handleLogout = async () => {
         try {
             const user = JSON.parse(localStorage.getItem('userInfo')).user;
-            await axios.post('http://localhost:3000/cierreSesion', { user });
+            await axios.post('https://backendpaginaqr-production.up.railway.app/cierreSesion', { user });
             localStorage.removeItem('userInfo');
             setUser({});
             navigate('/');

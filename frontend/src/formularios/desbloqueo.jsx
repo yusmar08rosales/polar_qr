@@ -34,7 +34,7 @@ const Desbloqueo = () => {
             }
 
             try {
-                const response = await axios.post("http://localhost:3000/validacion", {
+                const response = await axios.post("https://backendpaginaqr-production.up.railway.app/validacion", {
                     user: values.user,
                     correo: values.correo,
                 });
@@ -61,7 +61,7 @@ const Desbloqueo = () => {
     const verificarCodigo = async () => {
         const codigoCompleto = Object.values(codigo).join("");
         try {
-            const response = await axios.post("http://localhost:3000/verificarCodigo", {
+            const response = await axios.post("https://backendpaginaqr-production.up.railway.app/verificarCodigo", {
                 user: values.user,
                 codigo: codigoCompleto,
             });
@@ -112,7 +112,7 @@ const Desbloqueo = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:3000/actualizarContrasena", {
+            const response = await axios.post("https://backendpaginaqr-production.up.railway.app/actualizarContrasena", {
                 user: values.user,
                 newPassword,
             });
@@ -209,6 +209,7 @@ const Desbloqueo = () => {
                                     label='Usuario'
                                     placeholder='Usuario'
                                     value={values.user}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                     onChange={e => setValues({ ...values, user: e.target.value })}
                                 />
                                 <TextField
@@ -220,6 +221,7 @@ const Desbloqueo = () => {
                                     label='Correo'
                                     placeholder='Correo'
                                     value={values.correo}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                     onChange={e => setValues({ ...values, correo: e.target.value })}
                                 />
                                 <Button
@@ -276,6 +278,7 @@ const Desbloqueo = () => {
                                 label='Contraseña'
                                 placeholder='Contraseña'
                                 value={values.password}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                 onChange={e => setNewPassword(e.target.value)}
                             />
                             <TextField
@@ -287,6 +290,7 @@ const Desbloqueo = () => {
                                 label='Contraseña'
                                 placeholder='Contraseña'
                                 value={confirmPassword}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                                 onChange={e => setConfirmPassword(e.target.value)}
                             />
                             <Button

@@ -26,7 +26,7 @@ function App() {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:3000/ingreso", {
+      const response = await axios.post(`https://backendpaginaqr-production.up.railway.app/ingreso`, {
         user: values.user,
         password: values.password,
       });
@@ -127,6 +127,7 @@ function App() {
                 placeholder="Usuario"
                 name="user"
                 value={values.user}
+                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
               />
@@ -141,6 +142,7 @@ function App() {
                 placeholder="Contraseña"
                 name="password"
                 value={values.password}
+                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
               />
