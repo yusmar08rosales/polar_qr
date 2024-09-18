@@ -40,6 +40,9 @@ html, body, #root {
 .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
     border-color: rgba(133, 130, 130, 0.363) !important;
 }
+/*.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root, .css-1bp1ao6, .css-ittuaa-MuiInputAdornment-root,.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+    color: white !important;
+}*/
 
 .form-row {
     display: flex;
@@ -69,16 +72,23 @@ html, body, #root {
     border-color: rgb(255 255 255 / 61%) !important;
 }
 
+
 /*-----------------------
     estilos locales 
 -----------------------*/
-.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-hfutr2-MuiSvgIcon-root-MuiSelect-icon {
+.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-hfutr2-MuiSvgIcon-root-MuiSelect-icon, .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input, .css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input {
     color: white !important;
 }
 
 /*-----------------------
     estilos build
 -----------------------*/
-.css-1ald77x.Mui-focused, .css-p0rm37, .css-1636szt {
+.css-1ald77x.Mui-focused, .css-p0rm37, .css-1636szt, .css-1ald77x, .css-1bp1ao6, .css-1ixds2g, .css-13maa2j, .css-13maa2j, .css-fvipm8, .css-mnn31 {
     color: #fff !important;
+}
+.css-zwxjex::before{
+    border-color: rgba(235, 235, 235, 0.61) !important;
+}
+.css-zwxjex::after{
+    border-color: rgb(253, 253, 253) !important;
 }

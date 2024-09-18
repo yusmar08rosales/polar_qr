@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../tabla.css'
 
 //componentes
@@ -14,13 +14,32 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 const History = () => {
+    // Estado 
+    const [history, setHistory] = useState([]);
 
-    // Estado para manejar las acciones del historial
-    const [history, setHistory] = useState([
-        { usuario: 'Pepito', accion: 'eliminó', lote: '04' },
-        { usuario: 'Juan', accion: 'actualizó', lote: '20' },
-        { usuario: 'Jesús', accion: 'eliminó', lote: '32' }
-    ]);
+    useEffect(() => {
+        const fetchHistorial = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/visualizarHistorico", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener el historial');
+                }
+
+                const result = await response.json();
+                setHistory(result.data); 
+            } catch (error) {
+                console.error("Error al mostrar el historial:", error);
+            }
+        };
+
+        fetchHistorial(); 
+    }, []); 
 
     return (
         <>
@@ -58,7 +77,7 @@ const History = () => {
                                                     padding: '16px',
                                                     borderBottom: '1px solid #ddd',
                                                     position: 'relative',
-                                                    paddingLeft: '40px', // Deja espacio para el círculo
+                                                    paddingLeft: '40px', 
                                                 }}
                                             >
                                                 <span
@@ -74,8 +93,12 @@ const History = () => {
                                                         display: 'inline-block',
                                                     }}
                                                 ></span>
-                                                {registro.usuario} {registro.accion} el lote {registro.lote}.
+                                                {registro.user}
                                             </TableCell>
+                                            <TableCell>{registro.accion}</TableCell>
+                                            <TableCell>{registro.documento}</TableCell>
+                                            <TableCell>{registro.dateFormat}</TableCell>
+                                            <TableCell>{registro.date}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

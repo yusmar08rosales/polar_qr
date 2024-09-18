@@ -14,6 +14,8 @@ app.use(express.json());
 
 import User from "./models/model.user.js";
 import role from './models/model.roles.js';
+import Histories from './models/model.histories.js';
+import Embarque from './models/model.embarque.js';
 import { enviarCorreo } from './email.js';
 
 app.listen(3000, () => {
@@ -299,5 +301,68 @@ app.get("/roles", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error al recuperar roles" });
+  }
+});
+
+/*-------------------------------
+            HISTORICO
+-------------------------------*/
+//visualizar lista de historico
+app.post("/visualizarHistorico", async (req, res) => {
+  try {
+    const histories = await Histories.find({}); 
+    console.log(histories);
+
+    if (!histories || histories.length === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Historial no encontrado" });
+    }
+
+    // Mapear los registros para formatear las fechas
+    const formattedHistories = histories.map((history) => {
+      const formattedDate = new Date(history.date).toLocaleString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      return {
+        ...history._doc,
+        date: formattedDate // Reemplazar la fecha por la fecha formateada
+      };
+    });
+
+    return res.json({ status: "success", data: formattedHistories });
+  } catch (error) {
+    console.error("Error en la ruta:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Error interno del servidor" });
+  }
+});
+
+
+/*---------------------------
+      LISTADO DE LOTES
+---------------------------*/
+//listado de embarque
+app.post("/visualizarEmbarque", async (req, res) => {
+  try {
+    const HistoriesModel = model("histories", Histories.schema); // Cambié 'prompts' a 'histories'
+    const histories = await HistoriesModel.find({}); // Usa 'find' para obtener todos los registros
+    console.log(histories);
+
+    if (!histories || histories.length === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Historial no encontrado" });
+    }
+
+    return res.json({ status: "success", data: histories }); // Devuelve un array con todos los registros
+  } catch (error) {
+    console.error("Error en la ruta:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Error interno del servidor" });
   }
 });

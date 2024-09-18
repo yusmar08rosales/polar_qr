@@ -1,31 +1,44 @@
 import React, { useState } from "react";
-import '../tabla.css'
-
-//componentes
+import '../tabla.css';
 import BarraSeniat from "../barras/BarraSeniat";
-
-//dependecias
 import { TextField, Button, InputAdornment } from "@mui/material";
-
-//componented de tabla de los productos
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-
-
-//iconos
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 const ListaLoteSeniat = () => {
     const navigate = useNavigate();
 
+    // Estado para los lotes
+    const [lotes, setLotes] = useState([
+        {
+            id: 1,
+            loteFabricacion: 'A65BF9NH',
+            fechaEmbarque: '23 de Feb. de 2024',
+            origen: 'Holanda',
+            numeroEmbarque: '346598',
+            codigoSeniat: '34b87uy2',
+            fechaDesembarque: '15 de Marz. de 2024',
+        },
+        {
+            id: 2,
+            loteFabricacion: '564F98H',
+            fechaEmbarque: '30 de Abr. de 2024',
+            origen: 'España',
+            numeroEmbarque: '787783',
+            codigoSeniat: 'u67yu789',
+            fechaDesembarque: '15 de May. de 2024',
+        }
+    ]);
+
     const handleLote = () => {
-        navigate('/ListadoProducto')
-    }
+        navigate('/ListadoProducto');
+    };
 
     return (
         <>
@@ -37,13 +50,11 @@ const ListaLoteSeniat = () => {
                         <TextField
                             fullWidth
                             autoFocus
-                            type='text'
-                            color='primary'
-                            margin='normal'
-                            variant='outlined'
-                            placeholder='Filtro'
-                            //value={values.user}
-                            //onChange={e => setValues({ ...values, user: e.target.value })}
+                            type="text"
+                            color="primary"
+                            margin="normal"
+                            variant="outlined"
+                            placeholder="Filtro"
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -64,36 +75,26 @@ const ListaLoteSeniat = () => {
                                         <TableCell>Fecha de embarque</TableCell>
                                         <TableCell>Origen</TableCell>
                                         <TableCell>Número de embarque</TableCell>
-                                        <TableCell>Codigo de SENIAT</TableCell>
+                                        <TableCell>Código de SENIAT</TableCell>
                                         <TableCell>Fecha de desembarque</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell>
-                                            <Button className="button-product" onClick={handleLote}>
-                                                Lote 1
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell>
-                                            A65BF9NH
-                                        </TableCell>
-                                        <TableCell>
-                                            23 DE FEB. DE 2024
-                                        </TableCell>
-                                        <TableCell>
-                                            Holanda
-                                        </TableCell>
-                                        <TableCell>
-                                            346598
-                                        </TableCell>
-                                        <TableCell>
-                                            34b87uy2
-                                        </TableCell>
-                                        <TableCell>
-                                            15 de Marzo de 2024
-                                        </TableCell>
-                                    </TableRow>
+                                    {lotes.map((lote) => (
+                                        <TableRow key={lote.id}>
+                                            <TableCell>
+                                                <Button className="button-product" onClick={handleLote}>
+                                                    {`Lote ${lote.id}`}
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell>{lote.loteFabricacion}</TableCell>
+                                            <TableCell>{lote.fechaEmbarque}</TableCell>
+                                            <TableCell>{lote.origen}</TableCell>
+                                            <TableCell>{lote.numeroEmbarque}</TableCell>
+                                            <TableCell>{lote.codigoSeniat}</TableCell>
+                                            <TableCell>{lote.fechaDesembarque}</TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -103,4 +104,5 @@ const ListaLoteSeniat = () => {
         </>
     );
 };
+
 export default ListaLoteSeniat;

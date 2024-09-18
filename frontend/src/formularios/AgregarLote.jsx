@@ -1,55 +1,57 @@
 import React, { useState } from "react";
 import SimpleBar from "../barras/SimpleBar";
 import { TextField, Button, InputLabel, InputAdornment, Input } from "@mui/material";
-
-//iconos
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-//DEPENDENCIAS
 import DatePicker from "react-datepicker"; //calendario
 import "react-datepicker/dist/react-datepicker.css";
 
 const AgregarLote = () => {
-    // Estado para las fechas de embarque y desembarque
     const [fechaEmbarque, setFechaEmbarque] = useState(''); // Fecha de embarque como texto
     const [fechaDesembarque, setFechaDesembarque] = useState(''); // Fecha de desembarque como texto
-
-    // Estados para controlar la visibilidad de los DatePicker
     const [isDatePickerEmbarqueVisible, setIsDatePickerEmbarqueVisible] = useState(false);
     const [isDatePickerDesembarqueVisible, setIsDatePickerDesembarqueVisible] = useState(false);
 
-    // Función para formatear la fecha con "/"
     const formatFecha = (input) => {
-        let cleaned = input.replace(/\D+/g, ""); // Eliminar todo lo que no sea dígito
+        let cleaned = input.replace(/\D+/g, "");
         if (cleaned.length > 2) {
-            cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2); // Insertar la primera "/"
+            cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2);
         }
         if (cleaned.length > 5) {
-            cleaned = cleaned.substring(0, 5) + '/' + cleaned.substring(5, 9); // Insertar la segunda "/"
+            cleaned = cleaned.substring(0, 5) + '/' + cleaned.substring(5, 9);
         }
         return cleaned;
     };
 
-    // Función para convertir fecha de texto a Date (si es posible)
     const stringToDate = (str) => {
         const dateParts = str.split('/');
         if (dateParts.length === 3) {
             const [day, month, year] = dateParts;
             const validDate = new Date(`${year}-${month}-${day}`);
-            return isNaN(validDate.getTime()) ? null : validDate; // Si es NaN, la fecha es inválida
+            return isNaN(validDate.getTime()) ? null : validDate;
         }
         return null;
     };
 
-    // Manejar la entrada manual para la fecha de embarque
     const handleManualChangeEmbarque = (event) => {
         const inputDate = event.target.value;
-        setFechaEmbarque(formatFecha(inputDate)); // Formatear la fecha con "/"
+        setFechaEmbarque(formatFecha(inputDate));
     };
 
-    // Manejar la entrada manual para la fecha de desembarque
     const handleManualChangeDesembarque = (event) => {
         const inputDate = event.target.value;
-        setFechaDesembarque(formatFecha(inputDate)); // Formatear la fecha con "/"
+        setFechaDesembarque(formatFecha(inputDate));
+    };
+
+    const handleDateChangeEmbarque = (date) => {
+        date.setHours(12, 0, 0, 0); // Asegurar que la hora sea el mediodía
+        setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+        setIsDatePickerEmbarqueVisible(false); // Cerrar el calendario al seleccionar la fecha
+    };
+
+    const handleDateChangeDesembarque = (date) => {
+        date.setHours(12, 0, 0, 0); // Asegurar que la hora sea el mediodía
+        setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+        setIsDatePickerDesembarqueVisible(false); // Cerrar el calendario al seleccionar la fecha
     };
 
     return (
@@ -65,8 +67,7 @@ const AgregarLote = () => {
                     </header>
 
                     <main className="modal_content">
-                        <form /*onSubmit={handleSubmit}*/>
-                            {/* Agrupar los primeros 4 TextField */}
+                        <form>
                             <div className="form-row">
                                 <TextField
                                     fullWidth
@@ -77,7 +78,7 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Lote'
                                     placeholder='Lote'
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 />
                                 <TextField
                                     fullWidth
@@ -87,7 +88,7 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Lote de Fabricación'
                                     placeholder='Lote de Fabricación'
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 />
 
                                 {/* Fecha de embarque con entrada manual y calendario */}
@@ -99,7 +100,7 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Fecha de embarque'
                                     value={fechaEmbarque}
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                     onChange={handleManualChangeEmbarque}
                                     placeholder='DD/MM/AAAA'
                                     InputProps={{
@@ -110,11 +111,13 @@ const AgregarLote = () => {
                                         ),
                                     }}
                                 />
-                                {/* Solo mostrar el DatePicker si el valor actual es una fecha válida */}
                                 {isDatePickerEmbarqueVisible && (
                                     <DatePicker
                                         selected={stringToDate(fechaEmbarque)}
-                                        onChange={(date) => setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'))}
+                                        onChange={(date) => {
+                                            setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+                                            setIsDatePickerEmbarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
+                                        }}
                                         dateFormat="dd/MM/yyyy"
                                         inline
                                     />
@@ -128,11 +131,10 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Destino de origen'
                                     placeholder='Destino de origen'
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 />
                             </div>
 
-                            {/* Agrupar los siguientes 3 TextField */}
                             <div className="form-row">
                                 <TextField
                                     fullWidth
@@ -142,7 +144,7 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Número de embarque'
                                     placeholder='Número de embarque'
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 />
                                 <TextField
                                     fullWidth
@@ -152,7 +154,7 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Codigo de SENIAT'
                                     placeholder='Codigo de SENIAT'
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 />
 
                                 {/* Fecha de desembarque con entrada manual y calendario */}
@@ -164,7 +166,7 @@ const AgregarLote = () => {
                                     variant='outlined'
                                     label='Fecha de desembarque'
                                     value={fechaDesembarque}
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                     onChange={handleManualChangeDesembarque}
                                     placeholder='DD/MM/AAAA'
                                     InputProps={{
@@ -175,11 +177,13 @@ const AgregarLote = () => {
                                         ),
                                     }}
                                 />
-                                {/* Solo mostrar el DatePicker si el valor actual es una fecha válida */}
                                 {isDatePickerDesembarqueVisible && (
                                     <DatePicker
                                         selected={stringToDate(fechaDesembarque)}
-                                        onChange={(date) => setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'))}
+                                        onChange={(date) => {
+                                            setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+                                            setIsDatePickerDesembarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
+                                        }}
                                         dateFormat="dd/MM/yyyy"
                                         inline
                                     />

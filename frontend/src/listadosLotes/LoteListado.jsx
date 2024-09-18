@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 //componentes
 import BarraSimple from "../barras/BarraSimple";
@@ -20,7 +20,28 @@ import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const LoteListado = () => {
- 
+
+    const [products, setProducts] = useState([
+        {
+            id: 1,
+            loteFabricacion: '233HG32',
+            fechaVencimiento: '15 de Marz. de 2024',
+            fechaFabricacion: '23 DE FEB. DE 2024'
+        },
+        {
+            id: 2,
+            loteFabricacion: 'VJH2242J',
+            fechaVencimiento: '05 de Abr. de 2024',
+            fechaFabricacion: '30 DE Oct. DE 2024'
+        },
+        {
+            id: 3,
+            loteFabricacion: '32DFS32',
+            fechaVencimiento: '24 de Sep. de 2024',
+            fechaFabricacion: '23 DE Ener. DE 2024'
+        },
+    ]);
+
     return (
         <>
             <div className="container">
@@ -62,26 +83,28 @@ const LoteListado = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell>
-                                            Caja 1
-                                        </TableCell>
-                                        <TableCell>
-                                            A65BF9NH
-                                        </TableCell>
-                                        <TableCell>
-                                            23 DE FEB. DE 2024
-                                        </TableCell>
-                                        <TableCell>
-                                            15 de Marzo de 2024
-                                        </TableCell>
-                                        <TableCell>
-                                            <CreateIcon />
-                                        </TableCell>
-                                        <TableCell>
-                                            <DeleteIcon />
-                                        </TableCell>
-                                    </TableRow>
+                                    {products.map((product) => (
+                                        <TableRow>
+                                            <TableCell>
+                                                {`Caja ${product.id}`}
+                                            </TableCell>
+                                            <TableCell>
+                                                {product.loteFabricacion}
+                                            </TableCell>
+                                            <TableCell>
+                                                {product.fechaFabricacion}
+                                            </TableCell>
+                                            <TableCell>
+                                                {product.fechaVencimiento}
+                                            </TableCell>
+                                            <TableCell>
+                                                <CreateIcon />
+                                            </TableCell>
+                                            <TableCell>
+                                                <DeleteIcon />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>

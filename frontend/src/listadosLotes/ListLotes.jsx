@@ -26,6 +26,28 @@ import { useNavigate } from "react-router-dom";
 const ListaLotes = () => {
     const navigate = useNavigate();
 
+    // Estado para los lotes
+    const [lotes, setLotes] = useState([
+        {
+            id: 1,
+            loteFabricacion: 'A65BF9NH',
+            fechaEmbarque: '23 de Feb. de 2024',
+            origen: 'Holanda',
+            numeroEmbarque: '346598',
+            codigoSeniat: '34b87uy2',
+            fechaDesembarque: '15 de Marz. de 2024',
+        },
+        {
+            id: 2,
+            loteFabricacion: '564F98H',
+            fechaEmbarque: '30 de Abr. de 2024',
+            origen: 'España',
+            numeroEmbarque: '787783',
+            codigoSeniat: 'u67yu789',
+            fechaDesembarque: '15 de May. de 2024',
+        }
+    ]);
+
     const handleLote = () => {
         navigate('/LoteListado')
     }
@@ -82,43 +104,33 @@ const ListaLotes = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell>
-                                            <Button className="button-product" onClick={handleLote}>
-                                                Lote 1
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell>
-                                            A65BF9NH
-                                        </TableCell>
-                                        <TableCell>
-                                            23 DE FEB. DE 2024
-                                        </TableCell>
-                                        <TableCell>
-                                            Holanda
-                                        </TableCell>
-                                        <TableCell>
-                                            346598
-                                        </TableCell>
-                                        <TableCell>
-                                            34b87uy2
-                                        </TableCell>
-                                        <TableCell>
-                                            15 de Marzo de 2024
-                                        </TableCell>
-                                        <TableCell>
-                                            <CreateIcon />
-                                        </TableCell>
-                                        <TableCell>
-                                            <DeleteIcon />
-                                        </TableCell>
-                                    </TableRow>
+                                    {lotes.map((lote) => (
+                                        < TableRow key={lote.id} >
+                                            <TableCell>
+                                                <Button className="button-product" onClick={handleLote}>
+                                                    {`Lote ${lote.id}`}
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell>{lote.loteFabricacion}</TableCell>
+                                            <TableCell>{lote.fechaEmbarque}</TableCell>
+                                            <TableCell>{lote.origen}</TableCell>
+                                            <TableCell>{lote.numeroEmbarque}</TableCell>
+                                            <TableCell>{lote.codigoSeniat}</TableCell>
+                                            <TableCell>{lote.fechaDesembarque}</TableCell>
+                                            <TableCell>
+                                                <CreateIcon />
+                                            </TableCell>
+                                            <TableCell>
+                                                <DeleteIcon />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };
