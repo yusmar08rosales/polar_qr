@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const embarqueSchema = new mongoose.Schema({
     id: {
-        type: String,
+        type: Number,
         required: true
     },
     lote: {

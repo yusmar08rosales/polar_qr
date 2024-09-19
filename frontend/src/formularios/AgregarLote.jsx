@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import axios from "axios";
+//dependencias
+import Swal from "sweetalert2";
 import SimpleBar from "../barras/SimpleBar";
 import { TextField, Button, InputLabel, InputAdornment, Input } from "@mui/material";
+//iconos
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DatePicker from "react-datepicker"; //calendario
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,8 +12,11 @@ import "react-datepicker/dist/react-datepicker.css";
 const AgregarLote = () => {
     const [fechaEmbarque, setFechaEmbarque] = useState(''); // Fecha de embarque como texto
     const [fechaDesembarque, setFechaDesembarque] = useState(''); // Fecha de desembarque como texto
+    const [fechaEmbarqueDate, setFechaEmbarqueDate] = useState(null);
+    const [fechaDesembarqueDate, setFechaDesembarqueDate] = useState(null);
     const [isDatePickerEmbarqueVisible, setIsDatePickerEmbarqueVisible] = useState(false);
     const [isDatePickerDesembarqueVisible, setIsDatePickerDesembarqueVisible] = useState(false);
+    const [values, setValues] = useState({ id: '', lote: '', fechaEmbarque: '', origen: '', embarque: '', SENIAT: '', fechaDesembarque: '' });
 
     const formatFecha = (input) => {
         let cleaned = input.replace(/\D+/g, "");
@@ -42,17 +49,47 @@ const AgregarLote = () => {
         setFechaDesembarque(formatFecha(inputDate));
     };
 
-    const handleDateChangeEmbarque = (date) => {
-        date.setHours(12, 0, 0, 0); // Asegurar que la hora sea el mediodía
-        setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
-        setIsDatePickerEmbarqueVisible(false); // Cerrar el calendario al seleccionar la fecha
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const formattedValues = {
+            ...values,
+            fechaEmbarque: fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '',
+            fechaDesembarque: fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : ''
+        };
+
+        if (Object.values(formattedValues).some(value => value === '')) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Por favor, complete todos los campos del formulario.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            return;
+        }
+
+        axios.post(`http://localhost:3000/registroLote`, formattedValues)
+            .then(res => {
+                Swal.fire({
+                    title: 'Registrado!',
+                    text: 'Lote registrado con éxito!',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            })
+            .catch(err => {
+                console.error('Error al registrar el lote: ', err);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Hubo un problema al registrar el lote.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            });
     };
 
-    const handleDateChangeDesembarque = (date) => {
-        date.setHours(12, 0, 0, 0); // Asegurar que la hora sea el mediodía
-        setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
-        setIsDatePickerDesembarqueVisible(false); // Cerrar el calendario al seleccionar la fecha
-    };
 
     return (
         <>
@@ -67,7 +104,7 @@ const AgregarLote = () => {
                     </header>
 
                     <main className="modal_content">
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="form-row">
                                 <TextField
                                     fullWidth
@@ -79,6 +116,8 @@ const AgregarLote = () => {
                                     label='Lote'
                                     placeholder='Lote'
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+                                    value={values.id}
+                                    onChange={e => setValues({ ...values, id: e.target.value })}
                                 />
                                 <TextField
                                     fullWidth
@@ -89,6 +128,8 @@ const AgregarLote = () => {
                                     label='Lote de Fabricación'
                                     placeholder='Lote de Fabricación'
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+                                    value={values.lote}
+                                    onChange={e => setValues({ ...values, lote: e.target.value })}
                                 />
 
                                 {/* Fecha de embarque con entrada manual y calendario */}
@@ -116,6 +157,7 @@ const AgregarLote = () => {
                                         selected={stringToDate(fechaEmbarque)}
                                         onChange={(date) => {
                                             setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+                                            setFechaEmbarqueDate(date);  // Guardar como objeto Date
                                             setIsDatePickerEmbarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
                                         }}
                                         dateFormat="dd/MM/yyyy"
@@ -132,6 +174,8 @@ const AgregarLote = () => {
                                     label='Destino de origen'
                                     placeholder='Destino de origen'
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+                                    value={values.origen}
+                                    onChange={e => setValues({ ...values, origen: e.target.value })}
                                 />
                             </div>
 
@@ -145,6 +189,8 @@ const AgregarLote = () => {
                                     label='Número de embarque'
                                     placeholder='Número de embarque'
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+                                    value={values.embarque}
+                                    onChange={e => setValues({ ...values, embarque: e.target.value })}
                                 />
                                 <TextField
                                     fullWidth
@@ -155,6 +201,8 @@ const AgregarLote = () => {
                                     label='Codigo de SENIAT'
                                     placeholder='Codigo de SENIAT'
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+                                    value={values.SENIAT}
+                                    onChange={e => setValues({ ...values, SENIAT: e.target.value })}
                                 />
 
                                 {/* Fecha de desembarque con entrada manual y calendario */}
@@ -182,6 +230,7 @@ const AgregarLote = () => {
                                         selected={stringToDate(fechaDesembarque)}
                                         onChange={(date) => {
                                             setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+                                            setFechaDesembarqueDate(date);  // Guardar como objeto Date
                                             setIsDatePickerDesembarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
                                         }}
                                         dateFormat="dd/MM/yyyy"
@@ -205,7 +254,8 @@ const AgregarLote = () => {
                                 className="boton-esp"
                                 variant="contained"
                                 size="large"
-                                type="submit">
+                                type="submit"
+                                onClick={handleSubmit}>
                                 ACEPTAR
                             </Button>
                         </form>

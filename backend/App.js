@@ -16,6 +16,7 @@ import User from "./models/model.user.js";
 import role from './models/model.roles.js';
 import Histories from './models/model.histories.js';
 import Embarque from './models/model.embarque.js';
+import productsList from './models/model.products.js';
 import { enviarCorreo } from './email.js';
 
 app.listen(3000, () => {
@@ -341,28 +342,101 @@ app.post("/visualizarHistorico", async (req, res) => {
   }
 });
 
-
 /*---------------------------
       LISTADO DE LOTES
 ---------------------------*/
 //listado de embarque
 app.post("/visualizarEmbarque", async (req, res) => {
   try {
-    const HistoriesModel = model("histories", Histories.schema); // Cambié 'prompts' a 'histories'
-    const histories = await HistoriesModel.find({}); // Usa 'find' para obtener todos los registros
-    console.log(histories);
+    const embarque = await Embarque.find({}); 
+    console.log(embarque);
 
-    if (!histories || histories.length === 0) {
+    if (!embarque || embarque.length === 0) {
       return res
         .status(404)
-        .json({ status: "error", message: "Historial no encontrado" });
+        .json({ status: "error", message: "embarque no encontrado" });
     }
 
-    return res.json({ status: "success", data: histories }); // Devuelve un array con todos los registros
+    return res.json({ status: "success", data: embarque }); // Devuelve un array con todos los registros
   } catch (error) {
     console.error("Error en la ruta:", error);
     return res
       .status(500)
       .json({ status: "error", message: "Error interno del servidor" });
+  }
+});
+
+//listado de productos
+app.post("/visualizarProductos", async (req, res) => {
+  try {
+    const { loteId } = req.body; //recibir el loteId en lugar de loteId
+
+    console.log("loteId recibido:", loteId);
+    
+    if (!loteId) {
+      return res.status(400).json({ status: "error", message: "No se proporcionó el loteId" });
+    }
+
+    // Busca productos que tengan el loteId proporcionado
+    const listProduct = await productsList.find({ id: loteId }); // Asegúrate de usar el campo correcto
+    console.log("Productos encontrados:", listProduct);
+  
+    if (!listProduct || listProduct.length === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Productos no encontrados para el lote dado" });
+    }
+
+    return res.json({ status: "success", data: listProduct }); // Devuelve los productos encontrados
+  } catch (error) {
+    console.error("Error en la ruta:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Error interno del servidor" });
+  }
+});
+
+/*---------------------------
+      formulario de lote
+---------------------------*/
+app.post("/registroLote", async (req, res) => {
+  try {
+    const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
+
+    const newUser = new Embarque({
+      id, 
+      lote, 
+      fechaEmbarque, 
+      origen, 
+      embarque, 
+      SENIAT, 
+      fechaDesembarque
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "Usuario registrado con éxito" });
+  } catch (err) {
+    console.error("Error al guardar los datos en la base de datos", err);
+    res.status(500).json({ error: "Error al guardar los datos en la base de datos" });
+  }
+});
+
+/*--------------------------
+    eliminar listado
+--------------------------*/
+app.get("/EliminarEmbarque", async (req, res) => {
+
+  try {
+    const result = await Embarque.updateOne({ });
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("embarque no encontrado o no modificado");
+    }
+
+    console.log("embarque eliminado", result);
+    res.json({ success: true, message: "embarque eliminado exitosamente" });
+  } catch (error) {
+    console.error("Error al eliminar el suscriptor:", error);
+    res.status(500).send("Error interno del servidor");
   }
 });
