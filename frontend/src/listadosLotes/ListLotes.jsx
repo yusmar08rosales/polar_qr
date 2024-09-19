@@ -124,8 +124,11 @@ const ListaLotes = () => {
                                         <TableCell>{lote.fechaDesembarque}</TableCell>
                                         <TableCell><CreateIcon /></TableCell>
                                         <TableCell>
-                                            <EliminarLote 
-                                            />
+                                            <Button>
+                                                <EliminarLote
+                                                    loteId={lote.id}
+                                                />
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}

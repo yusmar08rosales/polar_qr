@@ -424,19 +424,19 @@ app.post("/registroLote", async (req, res) => {
 /*--------------------------
     eliminar listado
 --------------------------*/
-app.get("/EliminarEmbarque", async (req, res) => {
-
+app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
   try {
-    const result = await Embarque.updateOne({ });
+    const loteId = parseInt(req.params.loteId); // Asegúrate de que el ID es un número si tu modelo lo requiere así
+    const result = await Embarque.deleteOne({ id: loteId });
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).send("embarque no encontrado o no modificado");
+    if (result.deletedCount === 0) {
+      return res.status(404).send("Embarque no encontrado");
     }
 
-    console.log("embarque eliminado", result);
-    res.json({ success: true, message: "embarque eliminado exitosamente" });
+    console.log("Embarque eliminado", result);
+    res.json({ success: true, message: "Embarque eliminado exitosamente" });
   } catch (error) {
-    console.error("Error al eliminar el suscriptor:", error);
+    console.error("Error al eliminar el embarque:", error);
     res.status(500).send("Error interno del servidor");
   }
 });

@@ -1,8 +1,9 @@
 import React from "react";
-//icono
+import Swal from "sweetalert2";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const EliminarLote = () => {
+const EliminarLote = ({ loteId }) => {
+    
     const handleDelete = async () => {
         const { isConfirmed } = await Swal.fire({
             title: '¿Estás seguro?',
@@ -12,42 +13,43 @@ const EliminarLote = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sí, eliminar!',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            heightAuto: false,
         });
 
         if (isConfirmed) {
             try {
-                console.log("Entrando a borrar embarque: ",);
-                const url = `http://localhost:3000/EliminarEmbarque`;
-                const response = await fetch(url);
+                const url = `http://localhost:3000/EliminarEmbarque/${loteId}`;
+                const response = await fetch(url, { method: 'DELETE' });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
                 const data = await response.json();
-                console.log(data);
                 if (data.success) {
                     Swal.fire(
                         'Eliminado!',
-                        'El hilo ha sido eliminado.',
+                        'El lote ha sido eliminado.',
                         'success'
                     );
                 } else {
-                    throw new Error(data.message || 'Error al eliminar el suscriptor en el backend');
+                    throw new Error(data.message || 'Error al eliminar el campo de todos los suscriptores');
                 }
             } catch (error) {
-                console.error("Error al eliminar el usuario:", error.response ? error.response.data : error);
+                console.error("Error al eliminar el lote:", error);
                 Swal.fire(
                     'Error!',
-                    'Hubo un problema al eliminar el hilo.',
+                    'Hubo un problema al eliminar el lote.',
                     'error'
                 );
             }
         }
     };
-    return (
-        <>
-            <div onClick={handleDelete}>
-                <DeleteIcon />
-            </div>
-        </>
-    )
 
-}
-export default EliminarLote
+    return (
+        <div onClick={handleDelete}>
+            <DeleteIcon />
+        </div>
+    );
+};
+
+export default EliminarLote;
