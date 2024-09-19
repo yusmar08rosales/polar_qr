@@ -425,18 +425,33 @@ app.post("/registroLote", async (req, res) => {
     eliminar listado
 --------------------------*/
 app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
+  const session = await mongoose.startSession(); // Inicia una sesión de transacción
+  session.startTransaction();
   try {
     const loteId = parseInt(req.params.loteId); // Asegúrate de que el ID es un número si tu modelo lo requiere así
-    const result = await Embarque.deleteOne({ id: loteId });
 
-    if (result.deletedCount === 0) {
+    // Eliminar el embarque
+    const resultEmbarque = await Embarque.deleteOne({ id: loteId }).session(session);
+
+    if (resultEmbarque.deletedCount === 0) {
+      await session.abortTransaction(); // Aborta la transacción si no se encuentra el embarque
+      session.endSession();
       return res.status(404).send("Embarque no encontrado");
     }
 
-    console.log("Embarque eliminado", result);
-    res.json({ success: true, message: "Embarque eliminado exitosamente" });
+    // Eliminar todos los productos asociados con el loteId
+    const resultProducts = await productsList.deleteMany({ id: loteId.toString() }).session(session);
+
+    await session.commitTransaction(); // Confirma la transacción
+    session.endSession();
+
+    console.log("Embarque eliminado", resultEmbarque);
+    console.log("Productos eliminados", resultProducts);
+    res.json({ success: true, message: "Embarque y productos relacionados eliminados exitosamente" });
   } catch (error) {
-    console.error("Error al eliminar el embarque:", error);
+    await session.abortTransaction(); // Asegúrate de abortar la transacción en caso de error
+    session.endSession();
+    console.error("Error al eliminar el embarque y los productos:", error);
     res.status(500).send("Error interno del servidor");
   }
 });
