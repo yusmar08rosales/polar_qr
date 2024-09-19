@@ -25,20 +25,35 @@ import { useNavigate } from "react-router-dom";
 const ListaLotes = () => {
     const navigate = useNavigate();
     const [lotes, setLotes] = useState([]);
+    const [filtro, setFiltro] = useState(""); // Estado para almacenar el valor del filtro
 
     /*----------------
         BOTONES
     ----------------*/
-    // Al hacer clic en un lote, pasamos el id del lote a la siguiente vista
+    //listado de productos
     const handleLote = async (loteId) => {
         navigate('/LoteListado', { state: { loteId: loteId } }); // Pasamos el id del lote en la ruta
         console.log("listado embarque", loteId);
     };
 
+    //formulario de lote
     const handleAgregarLote = () => {
         navigate('/registroLote');
     };
 
+    // Función para manejar cambios en el filtro
+    const handleFiltroChange = (event) => {
+        setFiltro(event.target.value);
+    };
+
+    // Filtrar los lotes según el valor del filtro
+    const lotesFiltrados = lotes.filter(lote => {
+        return lote.lote.toLowerCase().includes(filtro.toLowerCase()) ||
+            lote.origen.toLowerCase().includes(filtro.toLowerCase()) ||
+            lote.SENIAT.toLowerCase().includes(filtro.toLowerCase()) ||
+            lote.embarque.toLowerCase().includes(filtro.toLowerCase());
+    });
+    
     useEffect(() => {
         const fechEmbarque = async () => {
             try {
@@ -79,6 +94,8 @@ const ListaLotes = () => {
                         margin='normal'
                         variant='outlined'
                         placeholder='Filtro'
+                        value={filtro}
+                        onChange={handleFiltroChange}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -106,12 +123,12 @@ const ListaLotes = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {lotes.map((lote, index) => (
+                                {lotesFiltrados.map((lote, index) => (
                                     <TableRow key={index}>
                                         <TableCell>
                                             <Button
                                                 className="button-product"
-                                                onClick={() => handleLote(lote.id)} //id del lote
+                                                onClick={() => handleLote(lote.id)}
                                             >
                                                 {`Lote ${lote.id}`}
                                             </Button>

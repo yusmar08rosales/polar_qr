@@ -424,6 +424,24 @@ app.post("/registroLote", async (req, res) => {
 /*--------------------------
     eliminar listado
 --------------------------*/
+//eliminar un solo producto
+/*app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
+  try {
+    const result = await Embarque.updateOne({});
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("embarque no encontrado o no modificado");
+    }
+
+    console.log("embarque eliminado", result);
+    res.json({ success: true, message: "embarque eliminado exitosamente" });
+  } catch (error) {
+    console.error("Error al eliminar el suscriptor:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});*/
+
+//eliminar producto de 2 tablas
 app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
   const session = await mongoose.startSession(); // Inicia una sesión de transacción
   session.startTransaction();
