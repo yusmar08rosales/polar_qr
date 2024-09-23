@@ -2,10 +2,10 @@ import React from "react";
 import Swal from "sweetalert2";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const EliminarLote = ({ loteId }) => {
+const EliminarProduct = ({ lote }) => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo')); // Recuperamos el nombre de usuario desde localStorage
     const userName = userInfo?.user;  // Obtenemos el nombre de usuario
-
+    
     const handleDelete = async () => {
         const { isConfirmed } = await Swal.fire({
             title: '¿Estás seguro?',
@@ -21,7 +21,7 @@ const EliminarLote = ({ loteId }) => {
 
         if (isConfirmed) {
             try {
-                const url = `http://localhost:3000/EliminarEmbarque/${loteId}/${userName}`;
+                const url = `http://localhost:3000/EliminarProduct/${lote}/${userName}`;                
                 const response = await fetch(url, { method: 'DELETE' });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -48,10 +48,12 @@ const EliminarLote = ({ loteId }) => {
     };
 
     return (
-        <div onClick={handleDelete}>
-            <DeleteIcon />
-        </div>
+        <>
+            <div onClick={handleDelete}>
+                <DeleteIcon />
+            </div>
+        </>
     );
 };
 
-export default EliminarLote;
+export default EliminarProduct;

@@ -311,7 +311,7 @@ app.get("/roles", async (req, res) => {
 //visualizar lista de historico
 app.post("/visualizarHistorico", async (req, res) => {
   try {
-    const histories = await Histories.find({}); 
+    const histories = await Histories.find({});
     console.log(histories);
 
     if (!histories || histories.length === 0) {
@@ -320,13 +320,15 @@ app.post("/visualizarHistorico", async (req, res) => {
         .json({ status: "error", message: "Historial no encontrado" });
     }
 
-    // Mapear los registros para formatear las fechas
+    // Mapear los registros para formatear las fechas con la zona horaria de Venezuela
     const formattedHistories = histories.map((history) => {
       const formattedDate = new Date(history.date).toLocaleString('es-ES', {
+        timeZone: 'America/Caracas',  // Ajustar a la zona horaria de Venezuela
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit'
       });
+
       return {
         ...history._doc,
         date: formattedDate // Reemplazar la fecha por la fecha formateada
@@ -348,7 +350,7 @@ app.post("/visualizarHistorico", async (req, res) => {
 //listado de embarque
 app.post("/visualizarEmbarque", async (req, res) => {
   try {
-    const embarque = await Embarque.find({}); 
+    const embarque = await Embarque.find({});
     console.log(embarque);
 
     if (!embarque || embarque.length === 0) {
@@ -366,13 +368,31 @@ app.post("/visualizarEmbarque", async (req, res) => {
   }
 });
 
+//visualizar embraque en particular
+app.post("/obtenerLote/:loteId", async (req, res) => {
+  try {
+    const { loteId } = req.params;  // Extraemos loteId de los parámetros de la URL
+    // Buscamos un único embarque que coincida con el loteId
+    const embarque = await Embarque.findOne({ id: loteId });  // Suponemos que 'id' es el campo clave para el lote
+
+    if (!embarque) {
+      return res.status(404).json({ status: "error", message: "Embarque no encontrado" });
+    }
+    console.log(embarque);
+    return res.json({ status: "success", data: embarque }); // Devolvemos el objeto embarque
+  } catch (error) {
+    console.error("Error en la ruta:", error);
+    return res.status(500).json({ status: "error", message: "Error interno del servidor" });
+  }
+});
+
 //listado de productos
 app.post("/visualizarProductos", async (req, res) => {
   try {
     const { loteId } = req.body; //recibir el loteId en lugar de loteId
 
     console.log("loteId recibido:", loteId);
-    
+
     if (!loteId) {
       return res.status(400).json({ status: "error", message: "No se proporcionó el loteId" });
     }
@@ -380,7 +400,7 @@ app.post("/visualizarProductos", async (req, res) => {
     // Busca productos que tengan el loteId proporcionado
     const listProduct = await productsList.find({ id: loteId }); // Asegúrate de usar el campo correcto
     console.log("Productos encontrados:", listProduct);
-  
+
     if (!listProduct || listProduct.length === 0) {
       return res
         .status(404)
@@ -404,12 +424,12 @@ app.post("/registroLote", async (req, res) => {
     const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
 
     const newUser = new Embarque({
-      id, 
-      lote, 
-      fechaEmbarque, 
-      origen, 
-      embarque, 
-      SENIAT, 
+      id,
+      lote,
+      fechaEmbarque,
+      origen,
+      embarque,
+      SENIAT,
       fechaDesembarque
     });
 
@@ -421,34 +441,52 @@ app.post("/registroLote", async (req, res) => {
   }
 });
 
-/*--------------------------
-    eliminar listado
---------------------------*/
+/*---------------------------------------------
+    ELIMINAR LISTADO Y GUARDAR HISTORICO
+---------------------------------------------*/
 //eliminar un solo producto
-/*app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
+app.delete('/EliminarProduct/:lote/:user', async (req, res) => {
   try {
-    const result = await Embarque.updateOne({});
+    const { lote, user } = req.params; // Obtenemos el lote desde los parámetros de la URL
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).send("embarque no encontrado o no modificado");
+    const result = await productsList.deleteOne({ loteFabricacion: lote });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).send("Producto no encontrado");
     }
 
-    console.log("embarque eliminado", result);
-    res.json({ success: true, message: "embarque eliminado exitosamente" });
+    // Registrar en el historial la eliminación del lote
+    const currentDate = new Date();
+    const dateISO = currentDate.toISOString();  // Formato de fecha ISO
+    const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
+
+    const newHistory = new Histories({
+      user: user,
+      accion: 'eliminó',
+      documento: `Producto ${lote}`,
+      date: dateISO,
+      dateFormat: dateFormatted
+    });
+
+    await newHistory.save();  // Guardar el historial en la base de datos
+
+    console.log("Lote eliminado y registrado en el historial", result);
+    res.json({ success: true, message: "Producto eliminado exitosamente" });
   } catch (error) {
-    console.error("Error al eliminar el suscriptor:", error);
+    console.error("Error al eliminar el producto:", error);
     res.status(500).send("Error interno del servidor");
   }
-});*/
+});
 
-//eliminar producto de 2 tablas
-app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
+//eliminar embarque y producto
+app.delete('/EliminarEmbarque/:loteId/:user', async (req, res) => {
   const session = await mongoose.startSession(); // Inicia una sesión de transacción
   session.startTransaction();
   try {
     const loteId = parseInt(req.params.loteId); // Asegúrate de que el ID es un número si tu modelo lo requiere así
+    const { user } = req.params; // Obtenemos el nombre del usuario desde los parámetros de la URL
 
-    // Eliminar el embarque
+    // 1. Eliminar el embarque
     const resultEmbarque = await Embarque.deleteOne({ id: loteId }).session(session);
 
     if (resultEmbarque.deletedCount === 0) {
@@ -457,19 +495,87 @@ app.delete('/EliminarEmbarque/:loteId', async (req, res) => {
       return res.status(404).send("Embarque no encontrado");
     }
 
-    // Eliminar todos los productos asociados con el loteId
+    // 2. Eliminar todos los productos asociados con el loteId
     const resultProducts = await productsList.deleteMany({ id: loteId.toString() }).session(session);
 
-    await session.commitTransaction(); // Confirma la transacción
+    // 3. Registrar en el historial la eliminación del lote
+    const currentDate = new Date();
+    const dateISO = currentDate.toISOString();  // Formato de fecha ISO
+    const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
+
+    const newHistory = new Histories({
+      user: user,
+      accion: 'eliminó',
+      documento: `Lote ${loteId}`,  // Usamos loteId para identificar el documento eliminado
+      date: dateISO,
+      dateFormat: dateFormatted
+    });
+
+    await newHistory.save({ session });  // Guardar el historial en la base de datos en la misma transacción
+
+    // 4. Confirma la transacción
+    await session.commitTransaction();
     session.endSession();
 
     console.log("Embarque eliminado", resultEmbarque);
     console.log("Productos eliminados", resultProducts);
-    res.json({ success: true, message: "Embarque y productos relacionados eliminados exitosamente" });
+    console.log("Historial registrado");
+
+    res.json({ success: true, message: "Embarque y productos relacionados eliminados exitosamente y registrado en el historial" });
   } catch (error) {
-    await session.abortTransaction(); // Asegúrate de abortar la transacción en caso de error
+    // Aborta la transacción en caso de error
+    await session.abortTransaction();
     session.endSession();
     console.error("Error al eliminar el embarque y los productos:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
+/*---------------------------------------------
+    MODIFICAR LISTADO Y GUARDAR HISTORICO
+---------------------------------------------*/
+app.put('/ModificarProduct/:lote/:user', async (req, res) => {
+  try {
+    const { lote, user } = req.params; // Obtenemos el lote y el usuario desde los parámetros de la URL
+    const { loteFabricacion, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body; // Nuevos datos del lote
+
+    // Actualizar el producto con los nuevos datos
+    const result = await productsList.updateOne(
+      { loteFabricacion: lote }, // Filtro por lote
+      {
+        $set: {
+          loteFabricacion,
+          fechaEmbarque,
+          origen,
+          embarque,
+          SENIAT,
+          fechaDesembarque
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("Producto no encontrado o no modificado");
+    }
+
+    // Registrar en el historial la actualización del lote
+    const currentDate = new Date();
+    const dateISO = currentDate.toISOString();  // Formato de fecha ISO
+    const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
+
+    /*const newHistory = new Histories({
+      user: user,
+      accion: 'Actualizó',
+      documento: `Lote ${lote}`,
+      date: dateISO,
+      dateFormat: dateFormatted
+    });
+
+    await newHistory.save();*/  // Guardar el historial en la base de datos
+
+    console.log("Lote actualizado y registrado en el historial", result);
+    res.json({ success: true, message: "Producto actualizado exitosamente" });
+  } catch (error) {
+    console.error("Error al actualizar el producto:", error);
     res.status(500).send("Error interno del servidor");
   }
 });

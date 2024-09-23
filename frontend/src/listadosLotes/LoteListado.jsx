@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom"; // Hook para obtener los parámetros de la URL
+import { useLocation } from "react-router-dom";
 
-//componentes
+// Componentes
 import BarraSimple from "../barras/BarraSimple";
+import EliminarProduct from "../eliminar-modificar/EliminarProduct";
 
-//componentes de tabla de los productos
+// Componentes de tabla
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -12,27 +13,24 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-//dependencias
-import { TextField, InputAdornment } from "@mui/material";
+// Dependencias
+import { TextField, InputAdornment, Button } from "@mui/material";
 
-//iconos
+// Iconos
 import SearchIcon from "@mui/icons-material/Search";
 import CreateIcon from '@mui/icons-material/Create';
-//import DeleteIcon from '@mui/icons-material/Delete';
 
 const LoteListado = () => {
-    const location = useLocation(); //locacización de las paginas
-    const [ products, setProducts ] = useState([]);
-    const [ lote, setLote ] = useState("");
-    const [ llamada, setLlamada ] = useState(false);
+    //estados
+    const location = useLocation();
+    const [products, setProducts] = useState([]);
+    const [filtro, setFiltro] = useState(""); // Estado para el texto del filtro
+    const [lote, setLote] = useState("");
+    const [llamada, setLlamada] = useState(false);
 
-    /*--------------------------------------------------------------------
-     localiza el producto seleccionado para cargar toda su información
-    --------------------------------------------------------------------*/
     useEffect(() => {
         if (location.state && location.state.loteId && !llamada) {
             const loteId = location.state.loteId;
-            console.log("lote listado", loteId);
             if (lote !== loteId) {
                 setLote(loteId);
                 setLlamada(true);
@@ -44,30 +42,40 @@ const LoteListado = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            if (!lote) return; // Solo hacer la llamada si hay un loteId disponible
-
+            if (!lote) return;
             try {
-                const response = await fetch("http://localhost:3000/visualizarProductos", {
+                const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarProductos", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ loteId: lote }) // Envía el loteId correctamente
+                    body: JSON.stringify({ loteId: lote })
                 });
-
                 if (!response.ok) {
                     throw new Error('Error al obtener los productos del lote');
                 }
-
                 const result = await response.json();
-                setProducts(result.data); // Almacena los productos obtenidos en el estado
+                setProducts(result.data);
             } catch (error) {
                 console.error("Error al mostrar el historial:", error);
             }
         };
-
         fetchProducts();
-    }, [lote]); // Hacer la llamada cada vez que cambie el lote
+    }, [lote]);
+
+    // Manejar cambios en el filtro
+    const handleFiltroChange = (event) => {
+        setFiltro(event.target.value);
+    };
+
+    // Filtrar los productos según el texto del filtro
+    const productosFiltrados = products.filter(product => {
+        return (
+            product.loteFabricacion.toLowerCase().includes(filtro.toLowerCase()) ||
+            product.fechaExpiacion.toLowerCase().includes(filtro.toLowerCase()) ||
+            product.fechaFabric.toLowerCase().includes(filtro.toLowerCase())
+        );
+    });
 
     return (
         <div className="container">
@@ -83,6 +91,8 @@ const LoteListado = () => {
                         margin='normal'
                         variant='outlined'
                         placeholder='Filtro'
+                        value={filtro}
+                        onChange={handleFiltroChange}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -107,14 +117,20 @@ const LoteListado = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {products.map((product, index) => (
+                                {productosFiltrados.map((product, index) => (
                                     <TableRow key={index}>
                                         <TableCell>{`Caja ${product.id}`}</TableCell>
                                         <TableCell>{product.loteFabricacion}</TableCell>
                                         <TableCell>{product.fechaExpiacion}</TableCell>
                                         <TableCell>{product.fechaFabric}</TableCell>
                                         <TableCell><CreateIcon /></TableCell>
-                                        {/*<TableCell><DeleteIcon /></TableCell>*/}
+                                        <TableCell>
+                                            <Button>
+                                                <EliminarProduct
+                                                    lote={product.loteFabricacion}
+                                                />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

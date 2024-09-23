@@ -1,106 +1,95 @@
 import React, { useState } from "react";
-import axios from "axios";
-//dependencias
+import '../tabla.css';
 import Swal from "sweetalert2";
-import SimpleBar from "../barras/SimpleBar";
-import { TextField, Button, InputLabel, InputAdornment, Input } from "@mui/material";
-//iconos
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import DatePicker from "react-datepicker"; //calendario
+import CreateIcon from '@mui/icons-material/Create';
+import { Modal, TextField, Button, InputAdornment } from '@mui/material';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import DatePicker from "react-datepicker"; // Asegúrate de instalar react-datepicker si no lo tienes
 import "react-datepicker/dist/react-datepicker.css";
 
-const AgregarLote = () => {
-    const [fechaEmbarque, setFechaEmbarque] = useState(''); // Fecha de embarque como texto
-    const [fechaDesembarque, setFechaDesembarque] = useState(''); // Fecha de desembarque como texto
-    const [fechaEmbarqueDate, setFechaEmbarqueDate] = useState(null);
-    const [fechaDesembarqueDate, setFechaDesembarqueDate] = useState(null);
+const ModificarLote = ({ loteId }) => {
+    const [open, setOpen] = useState(false);
+    const [values, setValues] = useState({
+        id: '',
+        lote: '',
+        fechaEmbarque: '',
+        origen: '',
+        embarque: '',
+        SENIAT: '',
+        fechaDesembarque: '',
+    });
+    const [fechaEmbarque, setFechaEmbarque] = useState("");
+    const [fechaDesembarque, setFechaDesembarque] = useState("");
     const [isDatePickerEmbarqueVisible, setIsDatePickerEmbarqueVisible] = useState(false);
     const [isDatePickerDesembarqueVisible, setIsDatePickerDesembarqueVisible] = useState(false);
-    const [values, setValues] = useState({ id: '', lote: '', fechaEmbarque: '', origen: '', embarque: '', SENIAT: '', fechaDesembarque: '' });
-
-    const formatFecha = (input) => {
-        let cleaned = input.replace(/\D+/g, "");
-        if (cleaned.length > 2) {
-            cleaned = cleaned.substring(0, 2) + '/' + cleaned.substring(2);
-        }
-        if (cleaned.length > 5) {
-            cleaned = cleaned.substring(0, 5) + '/' + cleaned.substring(5, 9);
-        }
-        return cleaned;
-    };
-
-    const stringToDate = (str) => {
-        const dateParts = str.split('/');
-        if (dateParts.length === 3) {
-            const [day, month, year] = dateParts;
-            const validDate = new Date(`${year}-${month}-${day}`);
-            return isNaN(validDate.getTime()) ? null : validDate;
-        }
-        return null;
-    };
+    const [fechaEmbarqueDate, setFechaEmbarqueDate] = useState(null);
+    const [fechaDesembarqueDate, setFechaDesembarqueDate] = useState(null);
+    const [lotes, setLotes] = useState([]);
+    const handleClose = () => setOpen(false);
 
     const handleManualChangeEmbarque = (event) => {
-        const inputDate = event.target.value;
-        setFechaEmbarque(formatFecha(inputDate));
+        setFechaEmbarque(event.target.value);
     };
 
     const handleManualChangeDesembarque = (event) => {
-        const inputDate = event.target.value;
-        setFechaDesembarque(formatFecha(inputDate));
+        setFechaDesembarque(event.target.value);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const formattedValues = {
-            ...values,
-            fechaEmbarque: fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '',
-            fechaDesembarque: fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : ''
-        };
-
-        if (Object.values(formattedValues).some(value => value === '')) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Por favor, complete todos los campos del formulario.',
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            return;
-        }
-
-        axios.post(`https://backendpaginaqr-production.up.railway.app/registroLote`, formattedValues)
-            .then(res => {
-                Swal.fire({
-                    title: 'Registrado!',
-                    text: 'Lote registrado con éxito!',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            })
-            .catch(err => {
-                console.error('Error al registrar el lote: ', err);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Hubo un problema al registrar el lote.',
-                    icon: 'error',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            });
+        // Implementar lógica de envío aquí
+        console.log(values);
+        handleClose(); // Cerrar modal después de enviar
     };
 
+    const handleOpen = () => {
+        setOpen(true); // Primero, se abre el modal
+        cargarDatosLote();  // Después, cargamos los datos del lote
+    };
+    const cargarDatosLote = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/obtenerLote/${loteId}`, {
+                method: 'POST', // Asegúrate de que el método HTTP es el correcto
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos del lote');
+            }
+            const result = await response.json();
+            // Actualizar el estado con los datos obtenidos
+            if (result.data) {
+                setValues({
+                    id: result.data.id,
+                    lote: result.data.lote,
+                    fechaEmbarque: result.data.fechaEmbarque,
+                    origen: result.data.origen,
+                    embarque: result.data.embarque,
+                    SENIAT: result.data.SENIAT,
+                    fechaDesembarque: result.data.fechaDesembarque,
+                });
+                // Más actualizaciones de estado según necesidad
+            }
+        } catch (error) {
+            console.error("Error al cargar datos del lote:", error);
+            Swal.fire('Error', 'No se pudo cargar los datos del lote', 'error');
+        }
+    }
 
     return (
-        <>
-            <div className="Container">
-                <div className="botones">
-                    <SimpleBar />
-                </div>
+        <div>
+            <CreateIcon onClick={handleOpen} style={{ cursor: 'pointer' }} />
 
-                <div className="modal">
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <div className="modale">
                     <header className="modal_header">
-                        <h2 className="modal_header-title">Agregar Lotes</h2>
+                        <h2 className="modal_header-title">Modificar Lote</h2>
                     </header>
 
                     <main className="modal_content">
@@ -140,7 +129,7 @@ const AgregarLote = () => {
                                     margin='normal'
                                     variant='outlined'
                                     label='Fecha de embarque'
-                                    value={fechaEmbarque}
+                                    value={values.fechaEmbarque}
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                     onChange={handleManualChangeEmbarque}
                                     placeholder='DD/MM/AAAA'
@@ -213,7 +202,7 @@ const AgregarLote = () => {
                                     margin='normal'
                                     variant='outlined'
                                     label='Fecha de desembarque'
-                                    value={fechaDesembarque}
+                                    value={values.fechaDesembarque}
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                     onChange={handleManualChangeDesembarque}
                                     placeholder='DD/MM/AAAA'
@@ -238,17 +227,6 @@ const AgregarLote = () => {
                                     />
                                 )}
                             </div>
-                            <div className="file-upload">
-                                <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
-                                <Input
-                                    id="upload-file"
-                                    type="file"
-                                    inputProps={{ accept: ".pdf,.doc,.docx,.png,.jpg" }}
-                                    fullWidth
-                                    className="custom-file-input"
-                                    color="primary"
-                                />
-                            </div>
                             <Button
                                 color="primary"
                                 className="boton-esp"
@@ -261,9 +239,9 @@ const AgregarLote = () => {
                         </form>
                     </main>
                 </div>
-            </div>
-        </>
+            </Modal>
+        </div>
     );
-}
+};
 
-export default AgregarLote;
+export default ModificarLote;

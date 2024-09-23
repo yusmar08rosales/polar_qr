@@ -74,6 +74,7 @@ function App() {
     }
   };
 
+  //obteción del token, rol y usuario
   const handleLoginSuccess = (userData) => {
     const base64Payload = userData.token.split(".")[1];
     const payload = atob(base64Payload);
@@ -86,11 +87,13 @@ function App() {
       rol: userRole,
       user: userName
     };
+    console.log(userInfo.user);
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
     setUser(userInfo);
     redirigirSegunRol(userInfo);
   };
 
+  //manejo de rutas segun el rol
   const redirigirSegunRol = (user) => {
     if (user.rol === "admin") {
       navigate("/lote", { state: { name_product: user.name_product } });
@@ -106,6 +109,7 @@ function App() {
       handleSubmit(event);
     }
   };
+  
   return (
     <>
       <div className="Container">

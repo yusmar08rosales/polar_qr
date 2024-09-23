@@ -4,6 +4,7 @@ import '../tabla.css'
 //componentes
 import BarraSupe from "../barras/BarraSupe";
 import EliminarLote from "../eliminar-modificar/EliminarLote";
+import ModificarLote from "../eliminar-modificar/modificarLote";
 
 //dependecias
 import { TextField, Button, InputAdornment, Tooltip } from "@mui/material";
@@ -19,7 +20,6 @@ import TableRow from '@mui/material/TableRow';
 //iconos
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
 import { useNavigate } from "react-router-dom";
 
 const ListaLotes = () => {
@@ -33,7 +33,6 @@ const ListaLotes = () => {
     //listado de productos
     const handleLote = async (loteId) => {
         navigate('/LoteListado', { state: { loteId: loteId } }); // Pasamos el id del lote en la ruta
-        console.log("listado embarque", loteId);
     };
 
     //formulario de lote
@@ -48,16 +47,18 @@ const ListaLotes = () => {
 
     // Filtrar los lotes según el valor del filtro
     const lotesFiltrados = lotes.filter(lote => {
-        return lote.lote.toLowerCase().includes(filtro.toLowerCase()) ||
+        return (
+            lote.lote.toLowerCase().includes(filtro.toLowerCase()) ||
             lote.origen.toLowerCase().includes(filtro.toLowerCase()) ||
             lote.SENIAT.toLowerCase().includes(filtro.toLowerCase()) ||
-            lote.embarque.toLowerCase().includes(filtro.toLowerCase());
+            lote.embarque.toLowerCase().includes(filtro.toLowerCase())
+        );
     });
-    
+
     useEffect(() => {
         const fechEmbarque = async () => {
             try {
-                const response = await fetch("http://localhost:3000/visualizarEmbarque", {
+                const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarEmbarque", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -104,6 +105,7 @@ const ListaLotes = () => {
                             ),
                         }}
                     />
+
                 </div>
 
                 <div className="table">
@@ -139,7 +141,13 @@ const ListaLotes = () => {
                                         <TableCell>{lote.embarque}</TableCell>
                                         <TableCell>{lote.SENIAT}</TableCell>
                                         <TableCell>{lote.fechaDesembarque}</TableCell>
-                                        <TableCell><CreateIcon /></TableCell>
+                                        <TableCell>
+                                            <Button>
+                                                <ModificarLote
+                                                    loteId={lote.id} 
+                                                />
+                                            </Button>
+                                        </TableCell>
                                         <TableCell>
                                             <Button>
                                                 <EliminarLote
