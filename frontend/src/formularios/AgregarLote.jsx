@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import '../App.scss';
 import axios from "axios";
 //dependencias
 import Swal from "sweetalert2";
@@ -10,6 +11,10 @@ import DatePicker from "react-datepicker"; //calendario
 import "react-datepicker/dist/react-datepicker.css";
 
 const AgregarLote = () => {
+    //obtencion de nombre de usuario
+    const userInfo = JSON.parse(localStorage.getItem('userInfo')); // Recuperamos el nombre de usuario desde localStorage
+    const userName = userInfo?.user;
+    //estados
     const [fechaEmbarque, setFechaEmbarque] = useState(''); // Fecha de embarque como texto
     const [fechaDesembarque, setFechaDesembarque] = useState(''); // Fecha de desembarque como texto
     const [fechaEmbarqueDate, setFechaEmbarqueDate] = useState(null);
@@ -68,7 +73,7 @@ const AgregarLote = () => {
             return;
         }
 
-        axios.post(`https://backendpaginaqr-production.up.railway.app/registroLote`, formattedValues)
+        axios.post(`https://backendpaginaqr-production.up.railway.app/registroLote/${userName}`, formattedValues)
             .then(res => {
                 Swal.fire({
                     title: 'Registrado!',

@@ -20,7 +20,7 @@ const History = () => {
     useEffect(() => {
         const fetchHistorial = async () => {
             try {
-                const response = await fetch("http://localhost:3000/visualizarHistorico", {
+                const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarHistorico", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -29,18 +29,6 @@ html, body, #root {
     margin: 2% 0% 2% 10%;
 }
 
-.modale {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(90deg, rgba(0, 96, 205, 0.815) 55%, rgba(5, 159, 236, 0.774) 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .table{
     /*border-radius: black;*/
 }

@@ -87,7 +87,6 @@ function App() {
       rol: userRole,
       user: userName
     };
-    console.log(userInfo.user);
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
     setUser(userInfo);
     redirigirSegunRol(userInfo);

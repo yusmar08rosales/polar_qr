@@ -21,7 +21,7 @@ const EliminarLote = ({ loteId }) => {
 
         if (isConfirmed) {
             try {
-                const url = `http://localhost:3000/EliminarEmbarque/${loteId}/${userName}`;
+                const url = `https://backendpaginaqr-production.up.railway.app/EliminarEmbarque/${loteId}/${userName}`;
                 const response = await fetch(url, { method: 'DELETE' });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);

@@ -419,8 +419,9 @@ app.post("/visualizarProductos", async (req, res) => {
 /*---------------------------
       formulario de lote
 ---------------------------*/
-app.post("/registroLote", async (req, res) => {
+app.post("/registroLote/:user", async (req, res) => {
   try {
+    const { user } = req.params; // Obtenemos el lote y el usuario desde los parámetros de la URL
     const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
 
     const newUser = new Embarque({
@@ -434,6 +435,21 @@ app.post("/registroLote", async (req, res) => {
     });
 
     await newUser.save();
+
+    // Registrar en el historial la actualización del lote
+    const currentDate = new Date();
+    const dateISO = currentDate.toISOString();  // Formato de fecha ISO
+    const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
+
+    const newHistory = new Histories({
+      user: user,
+      accion: 'Agregó',
+      documento: `Lote ${id}`,
+      date: dateISO,
+      dateFormat: dateFormatted
+    });
+
+    await newHistory.save();
     res.status(201).json({ message: "Usuario registrado con éxito" });
   } catch (err) {
     console.error("Error al guardar los datos en la base de datos", err);
@@ -533,17 +549,18 @@ app.delete('/EliminarEmbarque/:loteId/:user', async (req, res) => {
 /*---------------------------------------------
     MODIFICAR LISTADO Y GUARDAR HISTORICO
 ---------------------------------------------*/
-app.put('/ModificarProduct/:lote/:user', async (req, res) => {
+app.post('/ModificarEmbarque/:loteId/:user', async (req, res) => {
   try {
-    const { lote, user } = req.params; // Obtenemos el lote y el usuario desde los parámetros de la URL
-    const { loteFabricacion, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body; // Nuevos datos del lote
+    const { loteId, user } = req.params; // Obtenemos el lote y el usuario desde los parámetros de la URL
+    const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body; // Nuevos datos del lote
 
     // Actualizar el producto con los nuevos datos
-    const result = await productsList.updateOne(
-      { loteFabricacion: lote }, // Filtro por lote
+    const result = await Embarque.updateOne(
+      { id: loteId }, // Filtro por lote
       {
         $set: {
-          loteFabricacion,
+          id,
+          lote,
           fechaEmbarque,
           origen,
           embarque,
@@ -562,15 +579,15 @@ app.put('/ModificarProduct/:lote/:user', async (req, res) => {
     const dateISO = currentDate.toISOString();  // Formato de fecha ISO
     const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
 
-    /*const newHistory = new Histories({
+    const newHistory = new Histories({
       user: user,
       accion: 'Actualizó',
-      documento: `Lote ${lote}`,
+      documento: `Lote ${loteId}`,
       date: dateISO,
       dateFormat: dateFormatted
     });
 
-    await newHistory.save();*/  // Guardar el historial en la base de datos
+    await newHistory.save();  // Guardar el historial en la base de datos
 
     console.log("Lote actualizado y registrado en el historial", result);
     res.json({ success: true, message: "Producto actualizado exitosamente" });
