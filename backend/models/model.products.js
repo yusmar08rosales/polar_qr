@@ -5,7 +5,7 @@ const productsSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    fechaFabric: {
+   /* fechaFabric: {
         type: String,
         required: true
     },
@@ -14,6 +14,10 @@ const productsSchema = new mongoose.Schema({
         required: true
     },
     loteFabricacion: {
+        type: String,
+        required: true
+    },*/
+    documento: {
         type: String,
         required: true
     }

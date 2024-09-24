@@ -22,6 +22,7 @@ const AgregarLote = () => {
     const [isDatePickerEmbarqueVisible, setIsDatePickerEmbarqueVisible] = useState(false);
     const [isDatePickerDesembarqueVisible, setIsDatePickerDesembarqueVisible] = useState(false);
     const [values, setValues] = useState({ id: '', lote: '', fechaEmbarque: '', origen: '', embarque: '', SENIAT: '', fechaDesembarque: '' });
+    const [selectedFile, setSelectedFile] = useState(null); // Estado para el archivo
 
     const formatFecha = (input) => {
         let cleaned = input.replace(/\D+/g, "");
@@ -54,48 +55,64 @@ const AgregarLote = () => {
         setFechaDesembarque(formatFecha(inputDate));
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formattedValues = {
-            ...values,
-            fechaEmbarque: fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '',
-            fechaDesembarque: fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : ''
-        };
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]); // Guardar el archivo seleccionado
+    };
 
-        if (Object.values(formattedValues).some(value => value === '')) {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+    
+        if (!selectedFile) {
             Swal.fire({
                 title: 'Error!',
-                text: 'Por favor, complete todos los campos del formulario.',
+                text: 'Por favor, suba un archivo.',
                 icon: 'error',
                 showConfirmButton: false,
                 timer: 3000
             });
             return;
         }
-
-        axios.post(`https://backendpaginaqr-production.up.railway.app/registroLote/${userName}`, formattedValues)
-            .then(res => {
-                Swal.fire({
-                    title: 'Registrado!',
-                    text: 'Lote registrado con éxito!',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            })
-            .catch(err => {
-                console.error('Error al registrar el lote: ', err);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Hubo un problema al registrar el lote.',
-                    icon: 'error',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
+    
+        // Asegúrate de que las fechas estén correctamente formateadas o que tengan un valor por defecto.
+        const formattedEmbarqueDate = fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '';
+        const formattedDesembarqueDate = fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : '';
+    
+        const formData = new FormData();
+        formData.append('id', values.id);
+        formData.append('lote', values.lote);
+        formData.append('fechaEmbarque', formattedEmbarqueDate); // Usar la fecha formateada
+        formData.append('origen', values.origen);
+        formData.append('embarque', values.embarque);
+        formData.append('SENIAT', values.SENIAT);
+        formData.append('fechaDesembarque', formattedDesembarqueDate); // Usar la fecha formateada
+        formData.append('documento', selectedFile); // Añadir el archivo
+    
+        try {
+            const res = await axios.post(`http://localhost:3000/registroLote/${userName}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
+    
+            Swal.fire({
+                title: 'Registrado!',
+                text: 'Lote registrado con éxito!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        } catch (err) {
+            console.error('Error al registrar el lote: ', err);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Hubo un problema al registrar el lote.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }
     };
-
-
+    
     return (
         <>
             <div className="Container">
@@ -248,10 +265,11 @@ const AgregarLote = () => {
                                 <Input
                                     id="upload-file"
                                     type="file"
-                                    inputProps={{ accept: ".pdf,.doc,.docx,.png,.jpg" }}
+                                    inputProps={{ accept: ".json, .csv" }}
                                     fullWidth
                                     className="custom-file-input"
                                     color="primary"
+                                    onChange={handleFileChange}
                                 />
                             </div>
                             <Button

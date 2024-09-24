@@ -7,6 +7,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+import multer from 'multer';
+import path from 'path';
 
 const app = express();
 app.use(cors());
@@ -419,7 +421,7 @@ app.post("/visualizarProductos", async (req, res) => {
 /*---------------------------
       formulario de lote
 ---------------------------*/
-app.post("/registroLote/:user", async (req, res) => {
+/*app.post("/registroLote/:user", async (req, res) => {
   try {
     const { user } = req.params; // Obtenemos el lote y el usuario desde los parámetros de la URL
     const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
@@ -455,7 +457,75 @@ app.post("/registroLote/:user", async (req, res) => {
     console.error("Error al guardar los datos en la base de datos", err);
     res.status(500).json({ error: "Error al guardar los datos en la base de datos" });
   }
+});*/
+
+
+// Configuración de multer para almacenar los archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './update-products'); // Directorio de destino
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, `${uniqueSuffix}-${file.originalname}`); // Guardar con un nombre único
+  }
 });
+
+const upload = multer({ storage: storage });
+
+// Ruta para manejar la subida del archivo y guardar los datos
+app.post("/registroLote/:user", upload.single('documento'), async (req, res) => { 
+  try {
+    const { user } = req.params;
+    const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
+
+    console.log('Datos recibidos:', { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque });
+    
+    const documentoPath = req.file ? req.file.path : null; // Ruta del archivo subido
+
+    // Guardar el embarque
+    const newUser = new Embarque({
+      id,
+      lote,
+      fechaEmbarque,
+      origen,
+      embarque,
+      SENIAT,
+      fechaDesembarque
+    });
+
+    await newUser.save();
+
+    // Guardar la referencia al archivo en productsList
+    if (documentoPath) {
+      const newProduct = new productsList({
+        id: `${id}`,
+        documento: documentoPath // Guardar la ruta del archivo
+      });
+      await newProduct.save();
+    }
+
+    // Registrar en el historial
+    const currentDate = new Date();
+    const dateISO = currentDate.toISOString();
+    const dateFormatted = currentDate.toLocaleDateString('es-ES');
+
+    const newHistory = new Histories({
+      user: user,
+      accion: 'Agregó',
+      documento: `Lote ${id}`,
+      date: dateISO,
+      dateFormat: dateFormatted
+    });
+
+    await newHistory.save();
+    res.status(201).json({ message: "Lote registrado con éxito" });
+  } catch (err) {
+    console.error("Error al guardar los datos en la base de datos", err);
+    res.status(500).json({ error: "Error al guardar los datos en la base de datos" });
+  }
+});
+
 
 /*---------------------------------------------
     ELIMINAR LISTADO Y GUARDAR HISTORICO
