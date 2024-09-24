@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs'
 
 const app = express();
 app.use(cors());
@@ -33,6 +34,21 @@ mongoose
   .then(() => console.log("Conexión a MongoDB exitosa"))
   .catch((err) => console.error("Error al conectar con MongoDB", err));
 
+/*------------------------------------
+      configuración de archivos
+------------------------------------*/
+// Configuración de multer para almacenar los archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './update-products'); // Directorio de destino
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, `${uniqueSuffix}-${file.originalname}`); // Guardar con un nombre único
+  }
+});
+
+const upload = multer({ storage: storage });
 /*------------------------
   formulario de ingreso
 ------------------------*/
@@ -389,7 +405,7 @@ app.post("/obtenerLote/:loteId", async (req, res) => {
 });
 
 //listado de productos
-app.post("/visualizarProductos", async (req, res) => {
+/*app.post("/visualizarProductos", async (req, res) => {
   try {
     const { loteId } = req.body; //recibir el loteId en lugar de loteId
 
@@ -416,7 +432,53 @@ app.post("/visualizarProductos", async (req, res) => {
       .status(500)
       .json({ status: "error", message: "Error interno del servidor" });
   }
+});*/
+
+
+app.post('/visualizarProductos', async (req, res) => {
+  const { loteId } = req.body; // Recibimos el ID del lote desde el frontend
+
+  try {
+    // Buscamos el producto en la base de datos usando el ID del embarque
+    const product = await productsList.findOne({ id: loteId });
+
+    if (!product) {
+      console.log('Producto no encontrado con el ID:', loteId);
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    // Ruta del archivo que está en la base de datos
+    const filePath = path.resolve(product.documento);
+    console.log('Ruta del archivo:', filePath);
+
+    // Leer el archivo
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error al leer el archivo:', err);
+        return res.status(500).json({ error: 'Error al leer el archivo' });
+      }
+
+      console.log('Contenido del archivo leído:', data);
+
+      // Procesar el archivo dependiendo del formato
+      if (filePath.endsWith('.json')) {
+        // Si es un archivo JSON
+        const jsonData = JSON.parse(data);
+        res.status(200).json({ data: jsonData });
+      } else if (filePath.endsWith('.csv')) {
+        // Si es un archivo CSV, puedes convertirlo a JSON si lo prefieres
+        const csvData = data.split('\n').map(row => row.split(','));
+        res.status(200).json({ data: csvData });
+      } else {
+        res.status(400).json({ error: 'Formato de archivo no soportado' });
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener el producto:', error);
+    res.status(500).json({ error: 'Error al obtener el producto' });
+  }
 });
+
 
 /*---------------------------
       formulario de lote
@@ -459,28 +521,14 @@ app.post("/visualizarProductos", async (req, res) => {
   }
 });*/
 
-
-// Configuración de multer para almacenar los archivos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './update-products'); // Directorio de destino
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, `${uniqueSuffix}-${file.originalname}`); // Guardar con un nombre único
-  }
-});
-
-const upload = multer({ storage: storage });
-
 // Ruta para manejar la subida del archivo y guardar los datos
-app.post("/registroLote/:user", upload.single('documento'), async (req, res) => { 
+app.post("/registroLote/:user", upload.single('documento'), async (req, res) => {
   try {
     const { user } = req.params;
     const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
 
     console.log('Datos recibidos:', { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque });
-    
+
     const documentoPath = req.file ? req.file.path : null; // Ruta del archivo subido
 
     // Guardar el embarque
@@ -530,40 +578,6 @@ app.post("/registroLote/:user", upload.single('documento'), async (req, res) => 
 /*---------------------------------------------
     ELIMINAR LISTADO Y GUARDAR HISTORICO
 ---------------------------------------------*/
-//eliminar un solo producto
-app.delete('/EliminarProduct/:lote/:user', async (req, res) => {
-  try {
-    const { lote, user } = req.params; // Obtenemos el lote desde los parámetros de la URL
-
-    const result = await productsList.deleteOne({ loteFabricacion: lote });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).send("Producto no encontrado");
-    }
-
-    // Registrar en el historial la eliminación del lote
-    const currentDate = new Date();
-    const dateISO = currentDate.toISOString();  // Formato de fecha ISO
-    const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
-
-    const newHistory = new Histories({
-      user: user,
-      accion: 'eliminó',
-      documento: `Producto ${lote}`,
-      date: dateISO,
-      dateFormat: dateFormatted
-    });
-
-    await newHistory.save();  // Guardar el historial en la base de datos
-
-    console.log("Lote eliminado y registrado en el historial", result);
-    res.json({ success: true, message: "Producto eliminado exitosamente" });
-  } catch (error) {
-    console.error("Error al eliminar el producto:", error);
-    res.status(500).send("Error interno del servidor");
-  }
-});
-
 //eliminar embarque y producto
 app.delete('/EliminarEmbarque/:loteId/:user', async (req, res) => {
   const session = await mongoose.startSession(); // Inicia una sesión de transacción
@@ -663,6 +677,53 @@ app.post('/ModificarEmbarque/:loteId/:user', async (req, res) => {
     res.json({ success: true, message: "Producto actualizado exitosamente" });
   } catch (error) {
     console.error("Error al actualizar el producto:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
+
+//modificar producto
+app.post('/ModificarProduct/:lote/:user', upload.single('documento'), async (req, res) => {
+  try {
+    const { lote, user } = req.params;
+
+    const documentoPath = req.file ? req.file.path : null;  // Ruta del archivo subido
+    if (!documentoPath) {
+      return res.status(400).send("No se ha subido ningún archivo");
+    }
+
+    // Actualiza la referencia al archivo en productsList
+    const result = await productsList.updateOne(
+      { id: lote },  // Filtro por id del lote
+      {
+        $set: {
+          documento: documentoPath
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("No se pudo modificar el producto, ya estaba con los mismos datos o no existe");
+    }
+
+    // Registrar en el historial
+    const currentDate = new Date();
+    const dateISO = currentDate.toISOString();  // Formato de fecha ISO
+    const dateFormatted = currentDate.toLocaleDateString('es-ES');  // Fecha en formato 'dd/mm/yyyy'
+
+    const newHistory = new Histories({
+      user: user,
+      accion: 'Actualizó archivo',
+      documento: `Producto ${lote}`,
+      date: dateISO,
+      dateFormat: dateFormatted
+    });
+
+    await newHistory.save();  // Guardar el historial en la base de datos
+
+    console.log("Producto modificado y registrado en el historial", result);
+    res.json({ success: true, message: "Producto modificado exitosamente" });
+  } catch (error) {
+    console.error("Error al modificar el producto:", error);
     res.status(500).send("Error interno del servidor");
   }
 });

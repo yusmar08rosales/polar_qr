@@ -5,18 +5,6 @@ const productsSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-   /* fechaFabric: {
-        type: String,
-        required: true
-    },
-    fechaExpiacion : {
-        type: String,
-        required: true
-    },
-    loteFabricacion: {
-        type: String,
-        required: true
-    },*/
     documento: {
         type: String,
         required: true

@@ -14,17 +14,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 // Dependencias
-import { TextField, InputAdornment, Button } from "@mui/material";
+import { TextField, InputAdornment, Button, Tooltip } from "@mui/material";
 
 // Iconos
 import SearchIcon from "@mui/icons-material/Search";
-import CreateIcon from '@mui/icons-material/Create';
 
 const LoteListado = () => {
-    //estados
     const location = useLocation();
     const [products, setProducts] = useState([]);
-    const [filtro, setFiltro] = useState(""); // Estado para el texto del filtro
+    const [filtro, setFiltro] = useState("");
     const [lote, setLote] = useState("");
     const [llamada, setLlamada] = useState(false);
 
@@ -44,7 +42,8 @@ const LoteListado = () => {
         const fetchProducts = async () => {
             if (!lote) return;
             try {
-                const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarProductos", {
+                console.log('Lote ID enviado al backend:', lote);
+                const response = await fetch("http://localhost:3000/visualizarProductos", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -55,7 +54,23 @@ const LoteListado = () => {
                     throw new Error('Error al obtener los productos del lote');
                 }
                 const result = await response.json();
-                setProducts(result.data);
+                console.log('Respuesta recibida del backend:', result.data);
+
+                // Procesar los datos: Convertir la matriz en un arreglo de objetos
+                const headers = result.data[0];  // Los encabezados están en la primera fila
+                const rows = result.data.slice(1);  // Las filas de datos restantes
+
+                // Convertimos cada fila en un objeto con claves de encabezado
+                const formattedData = rows.map(row => {
+                    if (row.every(cell => cell === '')) return null;
+                    const item = {};
+                    headers.forEach((header, index) => {
+                        item[header] = row[index];
+                    });
+                    return item;
+                }).filter(item => item !== null);
+
+                setProducts(formattedData);
             } catch (error) {
                 console.error("Error al mostrar el historial:", error);
             }
@@ -63,26 +78,31 @@ const LoteListado = () => {
         fetchProducts();
     }, [lote]);
 
-    // Manejar cambios en el filtro
     const handleFiltroChange = (event) => {
         setFiltro(event.target.value);
     };
 
-    // Filtrar los productos según el texto del filtro
+    // Filtrar productos según las claves de los encabezados (asegúrate de usar las claves correctas)
     const productosFiltrados = products.filter(product => {
         return (
-            product.loteFabricacion.toLowerCase().includes(filtro.toLowerCase()) ||
-            product.fechaExpiacion.toLowerCase().includes(filtro.toLowerCase()) ||
-            product.fechaFabric.toLowerCase().includes(filtro.toLowerCase())
+            product['Lote de Fabricación']?.toLowerCase().includes(filtro.toLowerCase()) ||
+            product['Fecha de Vencimiento']?.toLowerCase().includes(filtro.toLowerCase()) ||
+            product['Fecha de Fabricación']?.toLowerCase().includes(filtro.toLowerCase())
         );
     });
 
     return (
         <div className="container">
             <BarraSimple />
-
             <div className="list">
                 <div className="filtro">
+                    <Tooltip title={"Agregar Lote"}>
+                        <Button>
+                            <EliminarProduct
+                                lote={lote}
+                            />
+                        </Button>
+                    </Tooltip>
                     <TextField
                         fullWidth
                         autoFocus
@@ -112,25 +132,15 @@ const LoteListado = () => {
                                     <TableCell>Lote de Fabricación</TableCell>
                                     <TableCell>Fecha de Vencimiento</TableCell>
                                     <TableCell>Fecha de Fabricación</TableCell>
-                                    <TableCell>Modificar</TableCell>
-                                    <TableCell>Eliminar</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {productosFiltrados.map((product, index) => (
                                     <TableRow key={index}>
-                                        <TableCell>{`Caja ${product.id}`}</TableCell>
-                                        <TableCell>{product.loteFabricacion}</TableCell>
-                                        <TableCell>{product.fechaExpiacion}</TableCell>
-                                        <TableCell>{product.fechaFabric}</TableCell>
-                                        <TableCell><CreateIcon /></TableCell>
-                                        <TableCell>
-                                            <Button>
-                                                <EliminarProduct
-                                                    lote={product.loteFabricacion}
-                                                />
-                                            </Button>
-                                        </TableCell>
+                                        <TableCell>{product['Item de Lote']}</TableCell>
+                                        <TableCell>{product['Lote de Fabricación']}</TableCell>
+                                        <TableCell>{product['Fecha de Vencimiento']}</TableCell>
+                                        <TableCell>{product['Fecha de Fabricación']}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

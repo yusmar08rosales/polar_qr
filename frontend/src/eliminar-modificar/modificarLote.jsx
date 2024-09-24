@@ -68,7 +68,7 @@ const ModificarLote = ({ loteId }) => {
             return;
         }
 
-        axios.post(`https://backendpaginaqr-production.up.railway.app/ModificarEmbarque/${loteId}/${userName}`, formattedValues)
+        axios.post(`http://localhost:3000/ModificarEmbarque/${loteId}/${userName}`, formattedValues)
             .then(res => {
                 Swal.fire({
                     title: 'Registrado!',
