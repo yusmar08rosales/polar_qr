@@ -43,7 +43,7 @@ const LoteListado = () => {
             if (!lote) return;
             try {
                 console.log('Lote ID enviado al backend:', lote);
-                const response = await fetch("http://localhost:3000/visualizarProductos", {
+                const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarProductos", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

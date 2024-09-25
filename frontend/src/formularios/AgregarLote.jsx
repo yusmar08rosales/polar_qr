@@ -88,7 +88,7 @@ const AgregarLote = () => {
         formData.append('documento', selectedFile); // Añadir el archivo
     
         try {
-            const res = await axios.post(`http://localhost:3000/registroLote/${userName}`, formData, {
+            const res = await axios.post(`https://backendpaginaqr-production.up.railway.app/registroLote/${userName}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

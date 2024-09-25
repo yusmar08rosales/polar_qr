@@ -68,7 +68,7 @@ const ModificarLote = ({ loteId }) => {
         formData.append('embarque', values.embarque);
         formData.append('SENIAT', values.SENIAT);
     
-        axios.post(`http://localhost:3000/ModificarEmbarque/${loteId}/${userName}`, formData, {
+        axios.post(`https://backendpaginaqr-production.up.railway.app/ModificarEmbarque/${loteId}/${userName}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'  // Establecer el encabezado para multipart
             }

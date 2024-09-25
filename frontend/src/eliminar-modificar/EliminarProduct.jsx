@@ -32,7 +32,7 @@ const EliminarProduct = ({ lote }) => {
         formData.append('userName', userName);  // Agrega el nombre del usuario
     
         try {
-            const response = await fetch(`http://localhost:3000/ModificarProduct/${lote}/${userName}`, {
+            const response = await fetch(`https://backendpaginaqr-production.up.railway.app/ModificarProduct/${lote}/${userName}`, {
                 method: 'POST',
                 body: formData,
             });
