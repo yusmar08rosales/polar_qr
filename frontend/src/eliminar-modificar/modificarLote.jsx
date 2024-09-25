@@ -3,7 +3,7 @@ import '../App.scss';
 import axios from "axios";
 import Swal from "sweetalert2";
 import CreateIcon from '@mui/icons-material/Create';
-import { Modal, TextField, Button, InputAdornment } from '@mui/material';
+import { Modal, TextField, Button, InputLabel, InputAdornment, Input } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DatePicker from "react-datepicker"; // Asegúrate de instalar react-datepicker si no lo tienes
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,7 +15,6 @@ const ModificarLote = ({ loteId }) => {
     //estados
     const [open, setOpen] = useState(false);
     const [values, setValues] = useState({
-        id: '',
         lote: '',
         fechaEmbarque: '',
         origen: '',
@@ -28,6 +27,7 @@ const ModificarLote = ({ loteId }) => {
     const [isDatePickerEmbarqueVisible, setIsDatePickerEmbarqueVisible] = useState(false);
     const [isDatePickerDesembarqueVisible, setIsDatePickerDesembarqueVisible] = useState(false);
     const [fechaEmbarqueDate, setFechaEmbarqueDate] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null); // Estado para el archivo
     const [fechaDesembarqueDate, setFechaDesembarqueDate] = useState(null);
     const handleClose = () => setOpen(false);
 
@@ -39,57 +39,62 @@ const ModificarLote = ({ loteId }) => {
         setFechaDesembarque(event.target.value);
     };
 
-    const stringToDate = (str) => {
-        const dateParts = str.split('/');
-        if (dateParts.length === 3) {
-            const [day, month, year] = dateParts;
-            const validDate = new Date(`${year}-${month}-${day}`);
-            return isNaN(validDate.getTime()) ? null : validDate;
-        }
-        return null;
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]); // Guardar el archivo seleccionado
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const formattedValues = {
-            ...values,
-            fechaEmbarque: fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '',
-            fechaDesembarque: fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : ''
-        };
-
-        if (Object.values(formattedValues).some(value => value === '')) {
+    
+        if (!selectedFile) {
             Swal.fire({
                 title: 'Error!',
-                text: 'Por favor, complete todos los campos del formulario.',
+                text: 'Por favor, suba un archivo.',
                 icon: 'error',
                 showConfirmButton: false,
                 timer: 3000
             });
             return;
         }
-
-        axios.post(`http://localhost:3000/ModificarEmbarque/${loteId}/${userName}`, formattedValues)
-            .then(res => {
-                Swal.fire({
-                    title: 'Registrado!',
-                    text: 'Lote registrado con éxito!',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            })
-            .catch(err => {
-                console.error('Error al registrar el lote: ', err);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Hubo un problema al registrar el lote.',
-                    icon: 'error',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
+    
+        const formData = new FormData();
+        formData.append('documento', selectedFile);  // Añadir el archivo
+    
+        // Añadir los demás campos del formulario
+        formData.append('fechaEmbarque', fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '');
+        formData.append('fechaDesembarque', fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : '');
+        formData.append('lote', values.lote);
+        formData.append('origen', values.origen);
+        formData.append('embarque', values.embarque);
+        formData.append('SENIAT', values.SENIAT);
+    
+        axios.post(`http://localhost:3000/ModificarEmbarque/${loteId}/${userName}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'  // Establecer el encabezado para multipart
+            }
+        })
+        .then(res => {
+            Swal.fire({
+                title: 'Registrado!',
+                text: 'Lote registrado con éxito!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 3000
             });
+        })
+        .catch(err => {
+            console.error('Error al registrar el lote: ', err);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Hubo un problema al registrar el lote.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        });
+    
         handleClose(); // Cerrar modal después de enviar
-    };
+    };    
 
     const handleOpen = () => {
         setOpen(true); // Primero, se abre el modal
@@ -110,7 +115,6 @@ const ModificarLote = ({ loteId }) => {
             // Actualizar el estado con los datos obtenidos
             if (result.data) {
                 setValues({
-                    id: result.data.id,
                     lote: result.data.lote,
                     fechaEmbarque: result.data.fechaEmbarque,
                     origen: result.data.origen,
@@ -143,19 +147,6 @@ const ModificarLote = ({ loteId }) => {
                         <main className="modal_content">
                             <form onSubmit={handleSubmit}>
                                 <div className="form-row">
-                                    <TextField
-                                        fullWidth
-                                        autoFocus
-                                        type='text'
-                                        color='primary'
-                                        margin='normal'
-                                        variant='outlined'
-                                        label='Lote'
-                                        placeholder='Lote'
-                                        style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
-                                        value={values.id}
-                                        onChange={e => setValues({ ...values, id: e.target.value })}
-                                    />
                                     <TextField
                                         fullWidth
                                         type='email'
@@ -278,6 +269,18 @@ const ModificarLote = ({ loteId }) => {
                                             inline
                                         />
                                     )}
+                                </div>
+                                <div className="file-upload">
+                                    <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
+                                    <Input
+                                        id="upload-file"
+                                        type="file"
+                                        inputProps={{ accept: ".json, .csv" }}
+                                        fullWidth
+                                        className="custom-file-input"
+                                        color="primary"
+                                        onChange={handleFileChange}
+                                    />
                                 </div>
                                 <Button
                                     color="primary"

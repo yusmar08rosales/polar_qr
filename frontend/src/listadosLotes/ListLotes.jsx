@@ -74,6 +74,12 @@ const ListaLotes = () => {
             }
         };
         fechEmbarque();
+        
+        const intervalId = setInterval(() => {
+            fechEmbarque();
+        }, 1000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     return (

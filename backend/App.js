@@ -633,7 +633,7 @@ app.delete('/EliminarEmbarque/:loteId/:user', async (req, res) => {
 /*---------------------------------------------
     MODIFICAR LISTADO Y GUARDAR HISTORICO
 ---------------------------------------------*/
-app.post('/ModificarEmbarque/:loteId/:user', async (req, res) => {
+app.post('/ModificarEmbarque/:loteId/:user', upload.single('documento'), async (req, res) => {
   try {
     const { loteId, user } = req.params; // Obtenemos el lote y el usuario desde los parámetros de la URL
     const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body; // Nuevos datos del lote
@@ -654,7 +654,22 @@ app.post('/ModificarEmbarque/:loteId/:user', async (req, res) => {
       }
     );
 
-    if (result.modifiedCount === 0) {
+    const documentoPath = req.file ? req.file.path : null;  // Ruta del archivo subido
+    if (!documentoPath) {
+      return res.status(400).send("No se ha subido ningún archivo");
+    }
+
+    // Actualiza la referencia al archivo en productsList
+    const resul = await productsList.updateOne(
+      { id: loteId },  // Filtro por id del lote
+      {
+        $set: {
+          documento: documentoPath
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0 || resul.modifiedCount === 0) {
       return res.status(404).send("Producto no encontrado o no modificado");
     }
 
@@ -665,7 +680,7 @@ app.post('/ModificarEmbarque/:loteId/:user', async (req, res) => {
 
     const newHistory = new Histories({
       user: user,
-      accion: 'Actualizó',
+      accion: 'Actualizó Embarque',
       documento: `Lote ${loteId}`,
       date: dateISO,
       dateFormat: dateFormatted

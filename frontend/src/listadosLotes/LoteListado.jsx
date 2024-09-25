@@ -76,6 +76,11 @@ const LoteListado = () => {
             }
         };
         fetchProducts();
+        const intervalId = setInterval(() => {
+            fetchProducts();
+        }, 1000);
+
+        return () => clearInterval(intervalId);
     }, [lote]);
 
     const handleFiltroChange = (event) => {
