@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../tabla.css"
 import Swal from "sweetalert2";
 import CreateIcon from '@mui/icons-material/Create';
 import { Modal, Input, InputLabel, Button, Box } from "@mui/material";
@@ -77,13 +78,13 @@ const EliminarProduct = ({ lote }) => {
                         }}
                     >
                         <div className="file-upload">
-                            <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
+                            <InputLabel htmlFor="upload-file" className="title">Subir archivo</InputLabel>
                             <Input
                                 id="upload-file"
                                 type="file"
                                 inputProps={{ accept: ".json, .csv" }}
                                 fullWidth
-                                className="custom-file-input"
+                                className="title"
                                 color="primary"
                                 onChange={handleFileChange} // Manejador de archivo
                             />

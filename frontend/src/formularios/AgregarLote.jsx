@@ -263,7 +263,6 @@ const AgregarLote = () => {
                             <div className="file-upload">
                                 <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
                                 <Input
-                                    id="upload-file"
                                     type="file"
                                     inputProps={{ accept: ".json, .csv" }}
                                     fullWidth

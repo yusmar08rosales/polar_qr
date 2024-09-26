@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import '../App.scss';
 import axios from "axios";
 import Swal from "sweetalert2";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CreateIcon from '@mui/icons-material/Create';
-import { Modal, TextField, Button, InputLabel, InputAdornment, Input } from '@mui/material';
+import { Modal, TextField, Button, InputLabel, InputAdornment, Input, Tooltip } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DatePicker from "react-datepicker"; // Asegúrate de instalar react-datepicker si no lo tienes
 import "react-datepicker/dist/react-datepicker.css";
@@ -45,7 +46,7 @@ const ModificarLote = ({ loteId }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-    
+
         if (!selectedFile) {
             Swal.fire({
                 title: 'Error!',
@@ -56,10 +57,10 @@ const ModificarLote = ({ loteId }) => {
             });
             return;
         }
-    
+
         const formData = new FormData();
         formData.append('documento', selectedFile);  // Añadir el archivo
-    
+
         // Añadir los demás campos del formulario
         formData.append('fechaEmbarque', fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '');
         formData.append('fechaDesembarque', fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : '');
@@ -67,34 +68,34 @@ const ModificarLote = ({ loteId }) => {
         formData.append('origen', values.origen);
         formData.append('embarque', values.embarque);
         formData.append('SENIAT', values.SENIAT);
-    
-        axios.post(`https://backendpaginaqr-production.up.railway.app/ModificarEmbarque/${loteId}/${userName}`, formData, {
+
+        axios.post(`http://localhost:3000/ModificarEmbarque/${loteId}/${userName}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'  // Establecer el encabezado para multipart
             }
         })
-        .then(res => {
-            Swal.fire({
-                title: 'Registrado!',
-                text: 'Lote registrado con éxito!',
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 3000
+            .then(res => {
+                Swal.fire({
+                    title: 'Registrado!',
+                    text: 'Lote registrado con éxito!',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            })
+            .catch(err => {
+                console.error('Error al registrar el lote: ', err);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Hubo un problema al registrar el lote.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
             });
-        })
-        .catch(err => {
-            console.error('Error al registrar el lote: ', err);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Hubo un problema al registrar el lote.',
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        });
-    
+
         handleClose(); // Cerrar modal después de enviar
-    };    
+    };
 
     const handleOpen = () => {
         setOpen(true); // Primero, se abre el modal
@@ -139,6 +140,11 @@ const ModificarLote = ({ loteId }) => {
                 onClose={handleClose}
             >
                 <div className="Container">
+                    <Tooltip title={"regreso a la tabla de lotes"}>
+                        <Button color="inherit" onClick={handleClose}>
+                            <ArrowBackIcon />
+                        </Button>
+                    </Tooltip>
                     <div className="modal">
                         <header className="modal_header">
                             <h2 className="modal_header-title">Modificar Lote</h2>
@@ -273,7 +279,6 @@ const ModificarLote = ({ loteId }) => {
                                 <div className="file-upload">
                                     <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
                                     <Input
-                                        id="upload-file"
                                         type="file"
                                         inputProps={{ accept: ".json, .csv" }}
                                         fullWidth

@@ -560,7 +560,7 @@ app.post("/registroLote/:user", upload.single('documento'), async (req, res) => 
 
     const newHistory = new Histories({
       user: user,
-      accion: 'Agregó',
+      accion: 'Agregó Lote',
       documento: `Lote ${id}`,
       date: dateISO,
       dateFormat: dateFormatted
@@ -605,7 +605,7 @@ app.delete('/EliminarEmbarque/:loteId/:user', async (req, res) => {
 
     const newHistory = new Histories({
       user: user,
-      accion: 'eliminó',
+      accion: 'eliminó Embarque',
       documento: `Lote ${loteId}`,  // Usamos loteId para identificar el documento eliminado
       date: dateISO,
       dateFormat: dateFormatted
@@ -727,7 +727,7 @@ app.post('/ModificarProduct/:lote/:user', upload.single('documento'), async (req
 
     const newHistory = new Histories({
       user: user,
-      accion: 'Actualizó archivo',
+      accion: 'Actualizó Archivo',
       documento: `Producto ${lote}`,
       date: dateISO,
       dateFormat: dateFormatted

@@ -1,107 +1,145 @@
-import React, { useState } from "react";
-import '../tabla.css';
+import React, { useEffect, useState } from "react";
+import '../tabla.css'
+
+//componentes
 import BarraSeniat from "../barras/BarraSeniat";
+
+//dependecias
 import { TextField, Button, InputAdornment } from "@mui/material";
+
+//componentes de tabla de los productos
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+
+//iconos
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 const ListaLoteSeniat = () => {
     const navigate = useNavigate();
+    const [lotes, setLotes] = useState([]);
+    const [filtro, setFiltro] = useState(""); // Estado para almacenar el valor del filtro
 
-    // Estado para los lotes
-    const [lotes, setLotes] = useState([
-        {
-            id: 1,
-            loteFabricacion: 'A65BF9NH',
-            fechaEmbarque: '23 de Feb. de 2024',
-            origen: 'Holanda',
-            numeroEmbarque: '346598',
-            codigoSeniat: '34b87uy2',
-            fechaDesembarque: '15 de Marz. de 2024',
-        },
-        {
-            id: 2,
-            loteFabricacion: '564F98H',
-            fechaEmbarque: '30 de Abr. de 2024',
-            origen: 'España',
-            numeroEmbarque: '787783',
-            codigoSeniat: 'u67yu789',
-            fechaDesembarque: '15 de May. de 2024',
-        }
-    ]);
-
-    const handleLote = () => {
-        navigate('/ListadoProducto');
+    /*----------------
+        BOTONES
+    ----------------*/
+    //listado de productos
+    const handleLote = async (loteId) => {
+        navigate('/ListadoProducto', { state: { loteId: loteId } }); // Pasamos el id del lote en la ruta
     };
 
+    // Función para manejar cambios en el filtro
+    const handleFiltroChange = (event) => {
+        setFiltro(event.target.value);
+    };
+
+    // Filtrar los lotes según el valor del filtro
+    const lotesFiltrados = lotes.filter(lote => {
+        return (
+            lote.lote.toLowerCase().includes(filtro.toLowerCase()) ||
+            lote.origen.toLowerCase().includes(filtro.toLowerCase()) ||
+            lote.SENIAT.toLowerCase().includes(filtro.toLowerCase()) ||
+            lote.embarque.toLowerCase().includes(filtro.toLowerCase())
+        );
+    });
+
+    useEffect(() => {
+        const fechEmbarque = async () => {
+            try {
+                const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarEmbarque", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Error al obtener el listado de embarque');
+                }
+                const result = await response.json();
+                setLotes(result.data);
+            } catch (error) {
+                console.error("Error al mostrar el historial:", error);
+            }
+        };
+        fechEmbarque();
+        
+        const intervalId = setInterval(() => {
+            fechEmbarque();
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     return (
-        <>
-            <div className="container">
-                <BarraSeniat />
+        <div className="container">
+            <BarraSeniat />
 
-                <div className="list">
-                    <div className="filtro">
-                        <TextField
-                            fullWidth
-                            autoFocus
-                            type="text"
-                            color="primary"
-                            margin="normal"
-                            variant="outlined"
-                            placeholder="Filtro"
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </div>
+            <div className="list">
+                <div className="filtro">
+                    <TextField
+                        fullWidth
+                        autoFocus
+                        type='text'
+                        color='primary'
+                        margin='normal'
+                        variant='outlined'
+                        placeholder='Filtro'
+                        value={filtro}
+                        onChange={handleFiltroChange}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
-                    <div className="table">
-                        <TableContainer>
-                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Item de Lote</TableCell>
-                                        <TableCell>Lote de fabricación</TableCell>
-                                        <TableCell>Fecha de embarque</TableCell>
-                                        <TableCell>Origen</TableCell>
-                                        <TableCell>Número de embarque</TableCell>
-                                        <TableCell>Código de SENIAT</TableCell>
-                                        <TableCell>Fecha de desembarque</TableCell>
+                </div>
+
+                <div className="table">
+                    <TableContainer>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Item de Lote</TableCell>
+                                    <TableCell>Lote de Fabricación</TableCell>
+                                    <TableCell>Fecha de Embarque</TableCell>
+                                    <TableCell>Origen</TableCell>
+                                    <TableCell>Número de Embarque</TableCell>
+                                    <TableCell>Código de SENIAT</TableCell>
+                                    <TableCell>Fecha de Desembarque</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {lotesFiltrados.map((lote, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>
+                                            <Button
+                                                className="button-product"
+                                                onClick={() => handleLote(lote.id)}
+                                            >
+                                                {`Lote ${lote.id}`}
+                                            </Button>
+                                        </TableCell>
+                                        <TableCell>{lote.lote}</TableCell>
+                                        <TableCell>{lote.fechaEmbarque}</TableCell>
+                                        <TableCell>{lote.origen}</TableCell>
+                                        <TableCell>{lote.embarque}</TableCell>
+                                        <TableCell>{lote.SENIAT}</TableCell>
+                                        <TableCell>{lote.fechaDesembarque}</TableCell>
                                     </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {lotes.map((lote) => (
-                                        <TableRow key={lote.id}>
-                                            <TableCell>
-                                                <Button className="button-product" onClick={handleLote}>
-                                                    {`Lote ${lote.id}`}
-                                                </Button>
-                                            </TableCell>
-                                            <TableCell>{lote.loteFabricacion}</TableCell>
-                                            <TableCell>{lote.fechaEmbarque}</TableCell>
-                                            <TableCell>{lote.origen}</TableCell>
-                                            <TableCell>{lote.numeroEmbarque}</TableCell>
-                                            <TableCell>{lote.codigoSeniat}</TableCell>
-                                            <TableCell>{lote.fechaDesembarque}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </div>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

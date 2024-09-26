@@ -42,7 +42,6 @@ const LoteListado = () => {
         const fetchProducts = async () => {
             if (!lote) return;
             try {
-                console.log('Lote ID enviado al backend:', lote);
                 const response = await fetch("https://backendpaginaqr-production.up.railway.app/visualizarProductos", {
                     method: 'POST',
                     headers: {
@@ -54,7 +53,6 @@ const LoteListado = () => {
                     throw new Error('Error al obtener los productos del lote');
                 }
                 const result = await response.json();
-                console.log('Respuesta recibida del backend:', result.data);
 
                 // Procesar los datos: Convertir la matriz en un arreglo de objetos
                 const headers = result.data[0];  // Los encabezados están en la primera fila
@@ -76,7 +74,7 @@ const LoteListado = () => {
             }
         };
         fetchProducts();
-        const intervalId = setInterval(() => {
+       const intervalId = setInterval(() => {
             fetchProducts();
         }, 1000);
 

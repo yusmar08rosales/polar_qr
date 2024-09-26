@@ -9,6 +9,10 @@ html, body, #root {
     height: 100%; 
 }
 
+body{
+    display: block;
+}
+
 .container {
     position: absolute;
     background: #9ac3f8;
@@ -72,7 +76,13 @@ html, body, #root {
     border-color: rgb(255 255 255 / 61%) !important;
 }
 
+.title{
+    color: black !important;
+}
 
+#upload-file{
+    color: black !important;
+}
 /*-----------------------
     estilos locales 
 -----------------------*/
