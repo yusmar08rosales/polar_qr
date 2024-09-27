@@ -41,9 +41,9 @@ body{
     padding: 1% 1% 1% 70%;
 }
 
-.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+/*.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
     border-color: rgba(133, 130, 130, 0.363) !important;
-}
+}*/
 /*.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root, .css-1bp1ao6, .css-ittuaa-MuiInputAdornment-root,.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
     color: white !important;
 }*/
@@ -76,17 +76,13 @@ body{
     border-color: rgb(255 255 255 / 61%) !important;
 }
 
-.title{
-    color: black !important;
-}
-
-#upload-file{
+#upload-file, #title, #archivo{
     color: black !important;
 }
 /*-----------------------
     estilos locales 
 -----------------------*/
-.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-hfutr2-MuiSvgIcon-root-MuiSelect-icon, .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
+.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-hfutr2-MuiSvgIcon-root-MuiSelect-icon, .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input, .css-8j6b76-MuiInputBase-root-MuiOutlinedInput-root {
     color: white !important;
 }
 

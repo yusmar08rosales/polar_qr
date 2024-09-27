@@ -4,9 +4,10 @@ import axios from "axios";
 //dependencias
 import Swal from "sweetalert2";
 import SimpleBar from "../barras/SimpleBar";
-import { TextField, Button, InputLabel, InputAdornment, Input } from "@mui/material";
+import { TextField, Button, InputLabel, InputAdornment } from "@mui/material";
 //iconos
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DatePicker from "react-datepicker"; //calendario
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -61,7 +62,7 @@ const AgregarLote = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         if (!selectedFile) {
             Swal.fire({
                 title: 'Error!',
@@ -72,11 +73,11 @@ const AgregarLote = () => {
             });
             return;
         }
-    
+
         // Asegúrate de que las fechas estén correctamente formateadas o que tengan un valor por defecto.
         const formattedEmbarqueDate = fechaEmbarqueDate ? fechaEmbarqueDate.toISOString().split('T')[0] : '';
         const formattedDesembarqueDate = fechaDesembarqueDate ? fechaDesembarqueDate.toISOString().split('T')[0] : '';
-    
+
         const formData = new FormData();
         formData.append('id', values.id);
         formData.append('lote', values.lote);
@@ -86,14 +87,17 @@ const AgregarLote = () => {
         formData.append('SENIAT', values.SENIAT);
         formData.append('fechaDesembarque', formattedDesembarqueDate); // Usar la fecha formateada
         formData.append('documento', selectedFile); // Añadir el archivo
-    
+
         try {
+            console.log("registro de nuevo embarque");
             const res = await axios.post(`https://backendpaginaqr-production.up.railway.app/registroLote/${userName}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-    
+
+            console.log(res);
+
             Swal.fire({
                 title: 'Registrado!',
                 text: 'Lote registrado con éxito!',
@@ -103,16 +107,29 @@ const AgregarLote = () => {
             });
         } catch (err) {
             console.error('Error al registrar el lote: ', err);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Hubo un problema al registrar el lote.',
-                icon: 'error',
-                showConfirmButton: false,
-                timer: 3000
-            });
+
+            // Verificar si el error es debido a que el lote ya está registrado
+            if (err.response && err.response.data && err.response.data.error === "Lote ya registrado") {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Lote ya registrado.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Hubo un problema al registrar el lote.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
         }
     };
-    
+
+
     return (
         <>
             <div className="Container">
@@ -161,6 +178,7 @@ const AgregarLote = () => {
                                     color='primary'
                                     margin='normal'
                                     variant='outlined'
+                                    id="fecha"
                                     label='Fecha de embarque'
                                     value={fechaEmbarque}
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
@@ -234,6 +252,7 @@ const AgregarLote = () => {
                                     color='primary'
                                     margin='normal'
                                     variant='outlined'
+                                    id="fecha"
                                     label='Fecha de desembarque'
                                     value={fechaDesembarque}
                                     style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
@@ -262,13 +281,20 @@ const AgregarLote = () => {
                             </div>
                             <div className="file-upload">
                                 <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
-                                <Input
+                                <TextField
                                     type="file"
                                     inputProps={{ accept: ".json, .csv" }}
                                     fullWidth
-                                    className="custom-file-input"
                                     color="primary"
                                     onChange={handleFileChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <CloudUploadIcon id="icono"/>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    variant="outlined"  // Puedes cambiar el estilo del TextField aquí
                                 />
                             </div>
                             <Button

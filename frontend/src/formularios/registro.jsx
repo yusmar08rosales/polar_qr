@@ -146,12 +146,11 @@ const Registro = () => {
                                 onChange={e => setValues({ ...values, correo: e.target.value })}
                             />
                             <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Rol</InputLabel>
+                                <InputLabel>Rol</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
                                     value={values.role}
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px', color: '#fff'}}
                                     label="Rol"
                                     onChange={e => setValues({ ...values, role: e.target.value })}
                                 >

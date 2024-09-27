@@ -21,6 +21,7 @@ import Histories from './models/model.histories.js';
 import Embarque from './models/model.embarque.js';
 import productsList from './models/model.products.js';
 import { enviarCorreo } from './email.js';
+import { log } from 'console';
 
 app.listen(3000, () => {
   console.log("Servidor iniciado en el puerto 3000");
@@ -524,6 +525,7 @@ app.post('/visualizarProductos', async (req, res) => {
 // Ruta para manejar la subida del archivo y guardar los datos
 app.post("/registroLote/:user", upload.single('documento'), async (req, res) => {
   try {
+    console.log("registro de nuevo embarque")
     const { user } = req.params;
     const { id, lote, fechaEmbarque, origen, embarque, SENIAT, fechaDesembarque } = req.body;
 
@@ -531,7 +533,15 @@ app.post("/registroLote/:user", upload.single('documento'), async (req, res) => 
 
     const documentoPath = req.file ? req.file.path : null; // Ruta del archivo subido
 
-    // Guardar el embarque
+    console.log("documento recibido", documentoPath);
+    
+    // Verificar si el id ya está registrado
+    const existingLote = await Embarque.findOne({ id: id });
+    if (existingLote) {
+      return res.status(400).json({ error: "Lote ya registrado" });
+    }
+
+    // Guardar el embarque si no existe
     const newUser = new Embarque({
       id,
       lote,
@@ -573,7 +583,6 @@ app.post("/registroLote/:user", upload.single('documento'), async (req, res) => 
     res.status(500).json({ error: "Error al guardar los datos en la base de datos" });
   }
 });
-
 
 /*---------------------------------------------
     ELIMINAR LISTADO Y GUARDAR HISTORICO

@@ -39,6 +39,11 @@ const History = () => {
         };
 
         fetchHistorial(); 
+        const intervalId = setInterval(() => {
+            fetchHistorial();
+        }, 1000);
+
+        return () => clearInterval(intervalId);
     }, []); 
 
     return (

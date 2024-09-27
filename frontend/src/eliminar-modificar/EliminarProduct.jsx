@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "../tabla.css"
+//dependencia
 import Swal from "sweetalert2";
+import { Modal, InputLabel, Button, Box, TextField, InputAdornment } from "@mui/material";
+//iconos
 import CreateIcon from '@mui/icons-material/Create';
-import { Modal, Input, InputLabel, Button, Box } from "@mui/material";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const EliminarProduct = ({ lote }) => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo')); // Recuperamos el nombre de usuario desde localStorage
@@ -78,16 +81,23 @@ const EliminarProduct = ({ lote }) => {
                         }}
                     >
                         <div className="file-upload">
-                            <InputLabel htmlFor="upload-file" className="title">Subir archivo</InputLabel>
-                            <Input
-                                id="upload-file"
-                                type="file"
-                                inputProps={{ accept: ".json, .csv" }}
-                                fullWidth
-                                className="title"
-                                color="primary"
-                                onChange={handleFileChange} // Manejador de archivo
-                            />
+                            <InputLabel htmlFor="upload-file" id="title">Subir archivo</InputLabel>
+                            <TextField
+                                    type="file"
+                                    inputProps={{ accept: ".json, .csv" }}
+                                    fullWidth
+                                    color="primary"
+                                    id="archivo"
+                                    onChange={handleFileChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <CloudUploadIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    variant="outlined"  // Puedes cambiar el estilo del TextField aquí
+                                />
                         </div>
                         <Button
                             variant="contained"

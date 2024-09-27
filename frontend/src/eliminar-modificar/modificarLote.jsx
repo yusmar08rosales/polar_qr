@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import '../App.scss';
 import axios from "axios";
+//dependencias
 import Swal from "sweetalert2";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CreateIcon from '@mui/icons-material/Create';
 import { Modal, TextField, Button, InputLabel, InputAdornment, Input, Tooltip } from '@mui/material';
+//iconos
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DatePicker from "react-datepicker"; // Asegúrate de instalar react-datepicker si no lo tienes
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -69,7 +72,7 @@ const ModificarLote = ({ loteId }) => {
         formData.append('embarque', values.embarque);
         formData.append('SENIAT', values.SENIAT);
 
-        axios.post(`http://localhost:3000/ModificarEmbarque/${loteId}/${userName}`, formData, {
+        axios.post(`https://backendpaginaqr-production.up.railway.app/ModificarEmbarque/${loteId}/${userName}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'  // Establecer el encabezado para multipart
             }
@@ -166,13 +169,13 @@ const ModificarLote = ({ loteId }) => {
                                         onChange={e => setValues({ ...values, lote: e.target.value })}
                                     />
 
-                                    {/* Fecha de embarque con entrada manual y calendario */}
                                     <TextField
                                         fullWidth
                                         type='text'
                                         color='primary'
                                         margin='normal'
                                         variant='outlined'
+                                        id="fecha"
                                         label='Fecha de embarque'
                                         value={values.fechaEmbarque}
                                         style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
@@ -248,6 +251,7 @@ const ModificarLote = ({ loteId }) => {
                                         color='primary'
                                         margin='normal'
                                         variant='outlined'
+                                        id="fecha"
                                         label='Fecha de desembarque'
                                         value={values.fechaDesembarque}
                                         style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
@@ -278,14 +282,21 @@ const ModificarLote = ({ loteId }) => {
                                 </div>
                                 <div className="file-upload">
                                     <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
-                                    <Input
-                                        type="file"
-                                        inputProps={{ accept: ".json, .csv" }}
-                                        fullWidth
-                                        className="custom-file-input"
-                                        color="primary"
-                                        onChange={handleFileChange}
-                                    />
+                                    <TextField
+                                    type="file"
+                                    inputProps={{ accept: ".json, .csv" }}
+                                    fullWidth
+                                    color="primary"
+                                    onChange={handleFileChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <CloudUploadIcon id="icono"/>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    variant="outlined"  // Puedes cambiar el estilo del TextField aquí
+                                />
                                 </div>
                                 <Button
                                     color="primary"
