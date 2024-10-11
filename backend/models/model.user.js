@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     required: false,
   },
+  sessionExpiresAt: { 
+    type: Date
+  },
   loginAttempts: {
     type: Number,
     required: true,

@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken";
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs'
+import cron from 'node-cron';
 
 const app = express();
 app.use(cors());
@@ -21,7 +22,6 @@ import Histories from './models/model.histories.js';
 import Embarque from './models/model.embarque.js';
 import productsList from './models/model.products.js';
 import { enviarCorreo } from './email.js';
-import { log } from 'console';
 
 app.listen(3000, () => {
   console.log("Servidor iniciado en el puerto 3000");
@@ -59,35 +59,39 @@ app.post("/ingreso", async (req, res) => {
     const { user, password } = req.body;
     const MAX_ATTEMPTS = 3;
     const LOCK_TIME = 2 * 60 * 60 * 1000; // 2 horas
+    const SESSION_DURATION = 15 * 60 * 1000; // 2 minutos (tiempo de sesión activa)
 
-    // Busca el usuario por su nombre de usuario
     const foundUser = await User.findOne({ user });
     console.log("Usuario encontrado:", foundUser);
 
     if (foundUser) {
-      // Verificar si ya tiene una sesión activa
+      // Verifica si la sesión ya ha expirado
+      if (foundUser.inicio && foundUser.sessionExpiresAt && Date.now() > foundUser.sessionExpiresAt) {
+        foundUser.inicio = false;
+        foundUser.sessionExpiresAt = undefined;
+        await foundUser.save();
+      }
+
+      // Si ya tiene una sesión activa y no ha expirado
       if (foundUser.inicio) {
         console.log("Posee sesion activa: ", foundUser.user);
         return res.status(400).json({ Message: "Ya posee una sesión activa" });
       }
 
-      // Verificar si el usuario está bloqueado
+      // Verificar si la cuenta está bloqueada
       if (foundUser.isLocked()) {
-        console.log("Cuenta bloqueada:", foundUser.user);
         return res.status(403).json({ Message: "Cuenta bloqueada. Intente de nuevo más tarde." });
       }
 
-      // Compara la contraseña ingresada con la hasheada almacenada
       const isMatch = await bcrypt.compare(password, foundUser.password);
 
       if (isMatch) {
-        // Genera el token
         const token = jwt.sign({ user: foundUser.user, role: foundUser.role }, "your_jwt_secret", { expiresIn: '1h' });
 
-        // Restablecer intentos fallidos y bloqueo
         foundUser.loginAttempts = 0;
         foundUser.lockUntil = undefined;
-        foundUser.inicio = true; // Marca que el usuario ha iniciado sesión
+        foundUser.inicio = true; 
+        foundUser.sessionExpiresAt = Date.now() + SESSION_DURATION; 
         await foundUser.save();
 
         return res.status(200).json({
@@ -100,12 +104,9 @@ app.post("/ingreso", async (req, res) => {
           foundUser.lockUntil = Date.now() + LOCK_TIME;
         }
         await foundUser.save();
-        console.log("Intentos fallidos de inicio de sesión:", foundUser.loginAttempts);
-
         return res.status(401).json({ Message: "Credenciales inválidas" });
       }
     } else {
-      console.log("Usuario no encontrado.");
       return res.status(401).json({ Message: "Credenciales inválidas" });
     }
   } catch (error) {
@@ -113,6 +114,21 @@ app.post("/ingreso", async (req, res) => {
     return res.status(500).json({ Message: "Error interno del servidor" });
   }
 });
+
+// Tarea CRON para actualizar sesiones
+cron.schedule('*/1 * * * *', async () => {
+  const now = Date.now();
+  try {
+    const result = await User.updateMany(
+      { sessionExpiresAt: { $lt: now }, inicio: true },
+      { $set: { inicio: false, sessionExpiresAt: undefined } }
+    );
+    console.log(`Sesiones expiradas actualizadas: ${result.modifiedCount}`);
+  } catch (error) {
+    console.error("Error al actualizar sesiones:", error);
+  }
+});
+
 
 //codigo de verificación de usuarios
 app.post("/verificarCodigo", async (req, res) => {
@@ -288,6 +304,12 @@ app.post("/registro", async (req, res) => {
   try {
     const { user, password, correo, role } = req.body;
 
+    // Verificar si ya existe un usuario con el mismo nombre
+    const existingUser = await User.findOne({ user });
+    if (existingUser) {
+      return res.status(400).json({ error: "El nombre de usuario ya existe." });
+    }
+    
     // Validación de la contraseña
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -534,7 +556,7 @@ app.post("/registroLote/:user", upload.single('documento'), async (req, res) => 
     const documentoPath = req.file ? req.file.path : null; // Ruta del archivo subido
 
     console.log("documento recibido", documentoPath);
-    
+
     // Verificar si el id ya está registrado
     const existingLote = await Embarque.findOne({ id: id });
     if (existingLote) {

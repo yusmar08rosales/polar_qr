@@ -193,16 +193,18 @@ const AgregarLote = () => {
                                     }}
                                 />
                                 {isDatePickerEmbarqueVisible && (
-                                    <DatePicker
-                                        selected={stringToDate(fechaEmbarque)}
-                                        onChange={(date) => {
-                                            setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
-                                            setFechaEmbarqueDate(date);  // Guardar como objeto Date
-                                            setIsDatePickerEmbarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
-                                        }}
-                                        dateFormat="dd/MM/yyyy"
-                                        inline
-                                    />
+                                    <div className="datepicker-container">
+                                        <DatePicker
+                                            selected={stringToDate(fechaEmbarque)}
+                                            onChange={(date) => {
+                                                setFechaEmbarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+                                                setFechaEmbarqueDate(date);  // Guardar como objeto Date
+                                                setIsDatePickerEmbarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
+                                            }}
+                                            dateFormat="dd/MM/yyyy"
+                                            inline
+                                        />
+                                    </div>
                                 )}
 
                                 <TextField
@@ -267,16 +269,18 @@ const AgregarLote = () => {
                                     }}
                                 />
                                 {isDatePickerDesembarqueVisible && (
-                                    <DatePicker
-                                        selected={stringToDate(fechaDesembarque)}
-                                        onChange={(date) => {
-                                            setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
-                                            setFechaDesembarqueDate(date);  // Guardar como objeto Date
-                                            setIsDatePickerDesembarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
-                                        }}
-                                        dateFormat="dd/MM/yyyy"
-                                        inline
-                                    />
+                                    <div className="datepicker-container2">
+                                        <DatePicker
+                                            selected={stringToDate(fechaDesembarque)}
+                                            onChange={(date) => {
+                                                setFechaDesembarque(date.toLocaleDateString('en-GB').replace(/\//g, '/'));
+                                                setFechaDesembarqueDate(date);  // Guardar como objeto Date
+                                                setIsDatePickerDesembarqueVisible(false); // Cerrar el calendario después de seleccionar una fecha
+                                            }}
+                                            dateFormat="dd/MM/yyyy"
+                                            inline
+                                        />
+                                    </div>
                                 )}
                             </div>
                             <div className="file-upload">
@@ -290,7 +294,7 @@ const AgregarLote = () => {
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
-                                                <CloudUploadIcon id="icono"/>
+                                                <CloudUploadIcon id="icono" />
                                             </InputAdornment>
                                         ),
                                     }}

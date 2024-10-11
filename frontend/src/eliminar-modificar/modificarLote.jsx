@@ -190,18 +190,20 @@ const ModificarLote = ({ loteId }) => {
                                         }}
                                     />
                                     {isDatePickerEmbarqueVisible && (
-                                        <DatePicker
-                                            selected={fechaEmbarqueDate}  // Usa el estado de la fecha como objeto Date
-                                            onChange={(date) => {
-                                                const formattedDate = date.toLocaleDateString('en-GB').replace(/\//g, '/'); // Formato DD/MM/AAAA
-                                                setFechaEmbarque(formattedDate);  // Actualiza el valor de la fecha de embarque en string
-                                                setValues({ ...values, fechaEmbarque: formattedDate });  // Actualiza el campo de fecha en values
-                                                setFechaEmbarqueDate(date);  // Guarda el objeto Date en el estado
-                                                setIsDatePickerEmbarqueVisible(false);  // Cierra el calendario
-                                            }}
-                                            dateFormat="dd/MM/yyyy"
-                                            inline
-                                        />
+                                        <div className="datepicker-container3">
+                                            <DatePicker
+                                                selected={fechaEmbarqueDate}  // Usa el estado de la fecha como objeto Date
+                                                onChange={(date) => {
+                                                    const formattedDate = date.toLocaleDateString('en-GB').replace(/\//g, '/'); // Formato DD/MM/AAAA
+                                                    setFechaEmbarque(formattedDate);  // Actualiza el valor de la fecha de embarque en string
+                                                    setValues({ ...values, fechaEmbarque: formattedDate });  // Actualiza el campo de fecha en values
+                                                    setFechaEmbarqueDate(date);  // Guarda el objeto Date en el estado
+                                                    setIsDatePickerEmbarqueVisible(false);  // Cierra el calendario
+                                                }}
+                                                dateFormat="dd/MM/yyyy"
+                                                inline
+                                            />
+                                        </div>
                                     )}
 
                                     <TextField
@@ -266,37 +268,39 @@ const ModificarLote = ({ loteId }) => {
                                         }}
                                     />
                                     {isDatePickerDesembarqueVisible && (
-                                        <DatePicker
-                                            selected={fechaDesembarqueDate}  // Usa el estado de la fecha como objeto Date
-                                            onChange={(date) => {
-                                                const formattedDate = date.toLocaleDateString('en-GB').replace(/\//g, '/');
-                                                setFechaDesembarque(formattedDate);  // Actualiza el valor de la fecha de desembarque en string
-                                                setValues({ ...values, fechaDesembarque: formattedDate });  // Actualiza el campo de fecha en values
-                                                setFechaDesembarqueDate(date);  // Guarda el objeto Date en el estado
-                                                setIsDatePickerDesembarqueVisible(false);  // Cierra el calendario
-                                            }}
-                                            dateFormat="dd/MM/yyyy"
-                                            inline
-                                        />
+                                        <div className="datepicker-container2">
+                                            <DatePicker
+                                                selected={fechaDesembarqueDate}  // Usa el estado de la fecha como objeto Date
+                                                onChange={(date) => {
+                                                    const formattedDate = date.toLocaleDateString('en-GB').replace(/\//g, '/');
+                                                    setFechaDesembarque(formattedDate);  // Actualiza el valor de la fecha de desembarque en string
+                                                    setValues({ ...values, fechaDesembarque: formattedDate });  // Actualiza el campo de fecha en values
+                                                    setFechaDesembarqueDate(date);  // Guarda el objeto Date en el estado
+                                                    setIsDatePickerDesembarqueVisible(false);  // Cierra el calendario
+                                                }}
+                                                dateFormat="dd/MM/yyyy"
+                                                inline
+                                            />
+                                        </div>
                                     )}
                                 </div>
                                 <div className="file-upload">
                                     <InputLabel htmlFor="upload-file">Subir archivo</InputLabel>
                                     <TextField
-                                    type="file"
-                                    inputProps={{ accept: ".json, .csv" }}
-                                    fullWidth
-                                    color="primary"
-                                    onChange={handleFileChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <CloudUploadIcon id="icono"/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    variant="outlined"  // Puedes cambiar el estilo del TextField aquí
-                                />
+                                        type="file"
+                                        inputProps={{ accept: ".json, .csv" }}
+                                        fullWidth
+                                        color="primary"
+                                        onChange={handleFileChange}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <CloudUploadIcon id="icono" />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        variant="outlined"  // Puedes cambiar el estilo del TextField aquí
+                                    />
                                 </div>
                                 <Button
                                     color="primary"

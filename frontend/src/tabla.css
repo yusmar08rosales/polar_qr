@@ -5,11 +5,13 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-html, body, #root {
-    height: 100%; 
+html,
+body,
+#root {
+    height: 100%;
 }
 
-body{
+body {
     display: block;
 }
 
@@ -17,7 +19,7 @@ body{
     position: absolute;
     background: #9ac3f8;
     width: 100%;
-    height: 100vh; 
+    height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -28,15 +30,16 @@ body{
     justify-items: center;
     width: 80%;
     height: 80%;
-    flex-grow: 1; 
-    overflow-y: auto; 
+    flex-grow: 1;
+    overflow-y: auto;
     margin: 2% 0% 2% 10%;
 }
 
-.table{
+.table {
     /*border-radius: black;*/
 }
-.filtro{
+
+.filtro {
     display: flex;
     padding: 1% 1% 1% 70%;
 }
@@ -50,51 +53,102 @@ body{
 
 .form-row {
     display: flex;
-    flex-wrap: wrap; /* Permitir que los campos se envuelvan si no caben en una sola línea */
-    gap: 16px; /* Espacio entre los TextField */
-    margin-bottom: 16px; /* Espacio entre las filas */
+    flex-wrap: wrap;
+    /* Permitir que los campos se envuelvan si no caben en una sola línea */
+    gap: 16px;
+    /* Espacio entre los TextField */
+    margin-bottom: 16px;
+    /* Espacio entre las filas */
 }
 
-.form-row > * {
-    flex: 1 1 calc(25% - 16px); /* 4 campos por fila, ajustando para que tengan espacio entre sí */
+.form-row>* {
+    flex: 1 1 calc(25% - 16px);
+    /* 4 campos por fila, ajustando para que tengan espacio entre sí */
 }
 
 .file-upload {
     margin-top: 16px;
     margin-bottom: 16px;
 }
-.css-9npbnl-MuiFormLabel-root-MuiInputLabel-root, .css-1x51dt5-MuiInputBase-input-MuiInput-input  {
+
+.css-9npbnl-MuiFormLabel-root-MuiInputLabel-root,
+.css-1x51dt5-MuiInputBase-input-MuiInput-input {
     color: rgb(255 249 249 / 72%) !important;
 }
-.css-1hhziy4-MuiInputBase-root-MuiInput-root::before{
+
+.css-1hhziy4-MuiInputBase-root-MuiInput-root::before {
     border-bottom: 1px solid rgb(248, 248, 248) !important;
 }
-:root{
+
+:root {
     color-scheme: none !important;
 }
+
 .css-igs3ac {
     border-color: rgb(255 255 255 / 61%) !important;
 }
 
-#upload-file, #title, #archivo{
+#upload-file,
+#title,
+#archivo {
     color: black !important;
 }
+
+.datepicker-container {
+    position: absolute;
+    z-index: 100;
+    top: 20%;
+    left: 72%;
+    overflow: auto;
+}
+
+.datepicker-container2{
+    position: absolute;
+    z-index: 100;
+    top: 40%;
+    left: 97%;
+    overflow: auto;
+}
+
+.datepicker-container3{
+    position: absolute;
+    z-index: 100;
+    top: 20%;
+    left: 65%;
+    overflow: auto;
+}
+
 /*-----------------------
     estilos locales 
 -----------------------*/
-.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-hfutr2-MuiSvgIcon-root-MuiSelect-icon, .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input, .css-8j6b76-MuiInputBase-root-MuiOutlinedInput-root {
+.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root,
+.css-hfutr2-MuiSvgIcon-root-MuiSelect-icon,
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input,
+.css-8j6b76-MuiInputBase-root-MuiOutlinedInput-root {
     color: white !important;
 }
 
 /*-----------------------
     estilos build
 -----------------------*/
-.css-1ald77x.Mui-focused, .css-p0rm37, .css-1636szt, .css-1ald77x, .css-1bp, .css-13maa2j, .css-13maa2j, .css-fvipm8, .css-mnn31 {
+.css-1ald77x.Mui-focused,
+.css-p0rm37,
+.css-2xhzvc,
+.css-1bp1ao6,
+.css-1636szt,
+.css-1ald77x,
+.css-1bp,
+.css-13maa2j,
+.css-13maa2j,
+.css-fvipm8,
+.css-mnn31 {
     color: #fff !important;
 }
-.css-zwxjex::before{
+
+.css-zwxjex::before {
     border-color: rgba(235, 235, 235, 0.61) !important;
 }
-.css-zwxjex::after{
+
+.css-zwxjex::after {
     border-color: rgb(253, 253, 253) !important;
 }
