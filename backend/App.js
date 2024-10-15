@@ -56,12 +56,15 @@ const upload = multer({ storage: storage });
 //ingresar usuarios
 app.post("/ingreso", async (req, res) => {
   try {
-    const { user, password } = req.body;
+    const { userOrEmail, password } = req.body;
     const MAX_ATTEMPTS = 3;
     const LOCK_TIME = 2 * 60 * 60 * 1000; // 2 horas
-    const SESSION_DURATION = 15 * 60 * 1000; // 2 minutos (tiempo de sesión activa)
+    const SESSION_DURATION = 15 * 60 * 1000; // 15 minutos
 
-    const foundUser = await User.findOne({ user });
+    // Busca el usuario por nombre de usuario o correo
+    const foundUser = await User.findOne({
+      $or: [{ user: userOrEmail }, { correo: userOrEmail }],
+    });
     console.log("Usuario encontrado:", foundUser);
 
     if (foundUser) {
@@ -86,7 +89,7 @@ app.post("/ingreso", async (req, res) => {
       const isMatch = await bcrypt.compare(password, foundUser.password);
 
       if (isMatch) {
-        const token = jwt.sign({ user: foundUser.user, role: foundUser.role }, "your_jwt_secret", { expiresIn: '1h' });
+        const token = jwt.sign({ user: foundUser.user, correo: foundUser.correo, role: foundUser.role }, "your_jwt_secret", { expiresIn: '1h' });
 
         foundUser.loginAttempts = 0;
         foundUser.lockUntil = undefined;
@@ -115,6 +118,7 @@ app.post("/ingreso", async (req, res) => {
   }
 });
 
+
 // Tarea CRON para actualizar sesiones
 cron.schedule('*/1 * * * *', async () => {
   const now = Date.now();
@@ -126,67 +130,6 @@ cron.schedule('*/1 * * * *', async () => {
     console.log(`Sesiones expiradas actualizadas: ${result.modifiedCount}`);
   } catch (error) {
     console.error("Error al actualizar sesiones:", error);
-  }
-});
-
-
-//codigo de verificación de usuarios
-app.post("/verificarCodigo", async (req, res) => {
-  const { user, codigo } = req.body;
-  const MAX_ATTEMPTS = 3;
-
-  try {
-    const usuarioEncontrado = await User.findOne({ user });
-
-    if (!usuarioEncontrado) {
-      return res.status(404).json({ message: "Usuario no encontrado." });
-    }
-
-    if (usuarioEncontrado.isLocked()) {
-      return res.status(403).json({ message: "Cuenta bloqueada. Intente de nuevo más tarde." });
-    }
-
-    const now = new Date();
-    if (
-      usuarioEncontrado.codigo.verificationCode === codigo &&
-      new Date(usuarioEncontrado.codigo.codeExpiration) > now
-    ) {
-      usuarioEncontrado.verificationAttempts = 0;
-      await usuarioEncontrado.save();
-
-      let token;
-      if (usuarioEncontrado.role === "admin" || usuarioEncontrado.role === "user") {
-        token = jwt.sign(
-          {
-            user: usuarioEncontrado.user,
-            role: usuarioEncontrado.role,
-            name_product: usuarioEncontrado.name_product,
-          },
-          "tu_clave_secreta",
-          { expiresIn: "1h" }
-        );
-
-        await User.updateOne(
-          { user },
-          {
-            $set: { inicio: true },
-          }
-        );
-
-        return res.json({ message: "Código verificado correctamente.", token });
-      }
-    } else {
-      usuarioEncontrado.verificationAttempts += 1;
-      if (usuarioEncontrado.verificationAttempts >= MAX_ATTEMPTS) {
-        usuarioEncontrado.lockUntil = Date.now(); // Bloquear inmediatamente
-      }
-      await usuarioEncontrado.save();
-      console.log("Intentos fallidos de inicio de sesión:", usuarioEncontrado.verificationAttempts);
-      return res.status(401).json({ message: "Código incorrecto o expirado." });
-    }
-  } catch (error) {
-    console.error("Error al verificar el código:", error);
-    return res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 
@@ -230,23 +173,26 @@ app.post("/cierreSesion", async (req, res) => {
     formulario de desbloqueo
 -----------------------------*/
 app.post("/validacion", async (req, res) => {
+  const { userOrEmail } = req.body;
   try {
+    // Busca el usuario ya sea por user o por correo
     const user = await User.findOne({
-      user: req.body.user,
-      correo: req.body.correo,
+      $or: [{ user: userOrEmail }, { correo: userOrEmail }],
     });
+
     console.log("user", user);
 
     if (user) {
+      const correo = user.correo; // Aquí obtienes el correo desde la base de datos
       const codigoVerificacion = Math.floor(
         100000 + Math.random() * 900000
       ).toString(); // Genera un código de 6 dígitos
       const codeExpiration = new Date();
       codeExpiration.setMinutes(codeExpiration.getMinutes() + 10);
 
-      // Aquí debes actualizar el usuario con el nuevo código y su expiración
+      // Actualiza el código de verificación y su expiración en la base de datos
       await User.updateOne(
-        { user: req.body.user },
+        { $or: [{ user: userOrEmail }, { correo: userOrEmail }] },
         {
           $set: {
             "codigo.verificationCode": codigoVerificacion,
@@ -256,10 +202,10 @@ app.post("/validacion", async (req, res) => {
       );
 
       // Ahora envía el correo con el código de verificación
-      const correoEnviado = await enviarCorreo(user.correo, codigoVerificacion);
+      const correoEnviado = await enviarCorreo(correo, codigoVerificacion); // Usa el correo real del usuario
 
       if (correoEnviado) {
-        res.json({ Message: "Código de verificación enviado al correo.", correo: user.correo });
+        res.json({ Message: "Código de verificación enviado al correo.", userOrEmail: correo });
       } else {
         res.status(500).json({ error: "No se pudo enviar el correo." });
       }
@@ -272,12 +218,13 @@ app.post("/validacion", async (req, res) => {
   }
 });
 
+
 app.post("/actualizarContrasena", async (req, res) => {
-  const { user, newPassword } = req.body;
+  const { userOrEmail, newPassword } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const usuarioEncontrado = await User.findOne({ user });
+    const usuarioEncontrado = await User.findOne({ $or: [{ user: userOrEmail }, { correo: userOrEmail }] });
 
     if (!usuarioEncontrado) {
       return res.status(404).json({ message: "Usuario no encontrado." });
@@ -296,6 +243,65 @@ app.post("/actualizarContrasena", async (req, res) => {
   }
 });
 
+//codigo de verificación de usuarios
+app.post("/verificarCodigo", async (req, res) => {
+  const { userOrEmail, codigo } = req.body;
+  const MAX_ATTEMPTS = 3;
+
+  try {
+    const usuarioEncontrado = await User.findOne({ $or: [{ user: userOrEmail }, { correo: userOrEmail }] });
+
+    if (!usuarioEncontrado) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    if (usuarioEncontrado.isLocked()) {
+      return res.status(403).json({ message: "Cuenta bloqueada. Intente de nuevo más tarde." });
+    }
+
+    const now = new Date();
+    if (
+      usuarioEncontrado.codigo.verificationCode === codigo &&
+      new Date(usuarioEncontrado.codigo.codeExpiration) > now
+    ) {
+      usuarioEncontrado.verificationAttempts = 0;
+      await usuarioEncontrado.save();
+
+      let token;
+      if (usuarioEncontrado.role === "admin" || usuarioEncontrado.role === "user") {
+        token = jwt.sign(
+          {
+            userOrEmail: usuarioEncontrado.userOrEmail,
+            role: usuarioEncontrado.role,
+            name_product: usuarioEncontrado.name_product,
+          },
+          "tu_clave_secreta",
+          { expiresIn: "1h" }
+        );
+
+        await User.updateOne(
+          { $or: [{ user: userOrEmail }, { correo: userOrEmail }] },
+          {
+            $set: { inicio: true },
+          }
+        );
+
+        return res.json({ message: "Código verificado correctamente.", token });
+      }
+    } else {
+      usuarioEncontrado.verificationAttempts += 1;
+      if (usuarioEncontrado.verificationAttempts >= MAX_ATTEMPTS) {
+        usuarioEncontrado.lockUntil = Date.now(); // Bloquear inmediatamente
+      }
+      await usuarioEncontrado.save();
+      console.log("Intentos fallidos de inicio de sesión:", usuarioEncontrado.verificationAttempts);
+      return res.status(401).json({ message: "Código incorrecto o expirado." });
+    }
+  } catch (error) {
+    console.error("Error al verificar el código:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
 /*-----------------------------
     formulario de registro
 -----------------------------*/
@@ -377,6 +383,26 @@ app.post("/visualizarHistorico", async (req, res) => {
     });
 
     return res.json({ status: "success", data: formattedHistories });
+  } catch (error) {
+    console.error("Error en la ruta:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Error interno del servidor" });
+  }
+});
+
+//visualizar lista de usuarios
+app.post("/visualizarUsuarios", async (req, res) => {
+  try {
+    const user = await User.find({});
+
+    if (!user || user.length === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Historial no encontrado" });
+    }
+
+    return res.json({ status: "success", user });
   } catch (error) {
     console.error("Error en la ruta:", error);
     return res

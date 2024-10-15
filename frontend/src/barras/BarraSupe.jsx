@@ -10,6 +10,7 @@ import { Button, Toolbar, AppBar, Tooltip } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
+import GroupIcon from '@mui/icons-material/Group';
 
 const BarraSupe = () => {
     //estados
@@ -37,6 +38,10 @@ const BarraSupe = () => {
         navigate('/History');
     };
 
+    const handleListUsers = async () => {
+        navigate('/ListaU');
+    };
+
     return (
         <>
             <AppBar position="static" sx={{ background: "linear-gradient(90deg, rgba(8,96,205,1) 30%, rgba(2,129,250,1) 66%)" }}>
@@ -47,6 +52,11 @@ const BarraSupe = () => {
                         </Button>
                     </Tooltip>
                     <div style={{ flexGrow: 1 }}></div>
+                    <Tooltip title={"Lista de usuarios"}>
+                        <Button color="inherit" onClick={handleListUsers}>
+                            <GroupIcon />
+                        </Button>
+                    </Tooltip>
                     <Tooltip title={"historico de modificaciones"}>
                         <Button color="inherit" onClick={handleHistory}>
                             <DensityMediumIcon />

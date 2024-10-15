@@ -11,7 +11,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Swal from "sweetalert2";
 
 const Desbloqueo = () => {
-    const [values, setValues] = useState({ user: '', correo: '' });
+    const [values, setValues] = useState({ userOrEmail: '', correo: '' });
     const [codigo, setCodigo] = useState({ digito1: '', digito2: '', digito3: '', digito4: '', digito5: '', digito6: '' });
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,7 +22,7 @@ const Desbloqueo = () => {
         event.preventDefault();
 
         if (step === 1) {
-            if (values.user === '' || values.correo === '') {
+            if (values.userOrEmail === '') {
                 Swal.fire({
                     title: 'Error!',
                     text: 'Por favor, complete todos los campos del formulario.',
@@ -35,8 +35,7 @@ const Desbloqueo = () => {
 
             try {
                 const response = await axios.post("https://backendpaginaqr-production.up.railway.app/validacion", {
-                    user: values.user,
-                    correo: values.correo,
+                    userOrEmail: values.userOrEmail,
                 });
                 if (response.data.Message === "Código de verificación enviado al correo.") {
                     setStep(2);
@@ -62,7 +61,7 @@ const Desbloqueo = () => {
         const codigoCompleto = Object.values(codigo).join("");
         try {
             const response = await axios.post("https://backendpaginaqr-production.up.railway.app/verificarCodigo", {
-                user: values.user,
+                userOrEmail: values.userOrEmail,
                 codigo: codigoCompleto,
             });
 
@@ -113,7 +112,7 @@ const Desbloqueo = () => {
 
         try {
             const response = await axios.post("https://backendpaginaqr-production.up.railway.app/actualizarContrasena", {
-                user: values.user,
+                userOrEmail: values.userOrEmail,
                 newPassword,
             });
             if (response.data.message === "Contraseña actualizada correctamente.") {
@@ -202,27 +201,16 @@ const Desbloqueo = () => {
                                 <TextField
                                     fullWidth
                                     autoFocus
-                                    type='text'
-                                    color='primary'
-                                    margin='normal'
-                                    variant='outlined'
-                                    label='Usuario'
-                                    placeholder='Usuario'
-                                    value={values.user}
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
-                                    onChange={e => setValues({ ...values, user: e.target.value })}
-                                />
-                                <TextField
-                                    fullWidth
-                                    type='email'
-                                    color='primary'
-                                    margin='normal'
-                                    variant='outlined'
-                                    label='Correo'
-                                    placeholder='Correo'
-                                    value={values.correo}
-                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
-                                    onChange={e => setValues({ ...values, correo: e.target.value })}
+                                    type="text"
+                                    color="primary"
+                                    margin="normal"
+                                    variant="outlined"
+                                    label="Usuario o Correo"
+                                    placeholder="Usuario o Correo"
+                                    name="userOrEmail" // Se usa un solo nombre para el input
+                                    value={values.userOrEmail}
+                                    style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+                                    onChange={e => setValues({ ...values, userOrEmail: e.target.value })}
                                 />
                                 <Button
                                     color="primary"
@@ -278,7 +266,7 @@ const Desbloqueo = () => {
                                 label='Contraseña'
                                 placeholder='Contraseña'
                                 value={values.password}
-                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 onChange={e => setNewPassword(e.target.value)}
                             />
                             <TextField
@@ -290,7 +278,7 @@ const Desbloqueo = () => {
                                 label='Contraseña'
                                 placeholder='Contraseña'
                                 value={confirmPassword}
-                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
+                                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
                                 onChange={e => setConfirmPassword(e.target.value)}
                             />
                             <Button

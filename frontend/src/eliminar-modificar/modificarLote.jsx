@@ -3,10 +3,11 @@ import '../App.scss';
 import axios from "axios";
 //dependencias
 import Swal from "sweetalert2";
+import { Modal, TextField, Button, InputLabel, InputAdornment, Input, Tooltip } from '@mui/material';
+
+//iconos
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CreateIcon from '@mui/icons-material/Create';
-import { Modal, TextField, Button, InputLabel, InputAdornment, Input, Tooltip } from '@mui/material';
-//iconos
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DatePicker from "react-datepicker"; // Asegúrate de instalar react-datepicker si no lo tienes

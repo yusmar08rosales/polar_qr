@@ -20,6 +20,7 @@ import AgregarLote from './formularios/AgregarLote.jsx';
 import ListaLoteSeniat from './listadosLotes/ListaLoteSeniat.jsx';
 import ListaProductSeniat from './listadosLotes/ListaProductSeniat.jsx';
 import History from './listadosLotes/History.jsx';
+import ListUsers from './listadosLotes/ListUsers.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 	<AuthProvider>
@@ -55,6 +56,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 				<Route path='/History' element={
 					<ProtectedRoute roles={['admin']}>
 						<History />
+					</ProtectedRoute>
+				} />
+				<Route path='/ListaU' element={
+					<ProtectedRoute roles={['admin']}>
+						<ListUsers />
 					</ProtectedRoute>
 				} />
 				<Route path='/ListadoLote' element={

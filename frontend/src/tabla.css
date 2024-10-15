@@ -35,35 +35,20 @@ body {
     margin: 2% 0% 2% 10%;
 }
 
-.table {
-    /*border-radius: black;*/
-}
-
 .filtro {
     display: flex;
     padding: 1% 1% 1% 70%;
 }
 
-/*.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
-    border-color: rgba(133, 130, 130, 0.363) !important;
-}*/
-/*.css-md26zr-MuiInputBase-root-MuiOutlinedInput-root, .css-1bp1ao6, .css-ittuaa-MuiInputAdornment-root,.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root, .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
-    color: white !important;
-}*/
-
 .form-row {
     display: flex;
-    flex-wrap: wrap;
-    /* Permitir que los campos se envuelvan si no caben en una sola línea */
-    gap: 16px;
-    /* Espacio entre los TextField */
-    margin-bottom: 16px;
-    /* Espacio entre las filas */
+    flex-wrap: wrap;/* Permitir que los campos se envuelvan si no caben en una sola línea */
+    gap: 16px;/* Espacio entre los TextField */
+    margin-bottom: 16px;/* Espacio entre las filas */
 }
 
 .form-row>* {
-    flex: 1 1 calc(25% - 16px);
-    /* 4 campos por fila, ajustando para que tengan espacio entre sí */
+    flex: 1 1 calc(25% - 16px);/* 4 campos por fila, ajustando para que tengan espacio entre sí */
 }
 
 .file-upload {
@@ -90,10 +75,18 @@ body {
 
 #upload-file,
 #title,
-#archivo {
+#archivo, #pass {
     color: black !important;
 }
 
+#passwiord{
+    color: black !important;
+    padding: 0% !important;
+}
+
+.css-tlc64q-MuiPaper-root-MuiDialog-paper{
+ background-color: #7eb0e6 !important;
+}
 .datepicker-container {
     position: absolute;
     z-index: 100;

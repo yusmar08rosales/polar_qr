@@ -10,7 +10,7 @@ function App() {
   const navigate = useNavigate();
   const { setUser, loginUser } = useAuth();
   const [values, setValues] = useState({
-    user: "",
+    userOrEmail: "", // Se fusionan user y correo en un solo campo
     password: "",
   });
 
@@ -27,7 +27,7 @@ function App() {
 
     try {
       const response = await axios.post(`https://backendpaginaqr-production.up.railway.app/ingreso`, {
-        user: values.user,
+        userOrEmail: values.userOrEmail, // Solo enviamos un campo
         password: values.password,
       });
       if (response.data.message === "Código verificado correctamente.") {
@@ -98,7 +98,7 @@ function App() {
       navigate("/lote", { state: { name_product: user.name_product } });
     } else if (user.rol === "seniat") {
       navigate("/ListadoLote", { state: { name_product: user.name_product } });
-    }else{
+    } else {
       navigate("/registroLote", { state: { name_product: user.name_product } })
     }
   };
@@ -108,7 +108,7 @@ function App() {
       handleSubmit(event);
     }
   };
-  
+
   return (
     <>
       <div className="Container">
@@ -117,45 +117,45 @@ function App() {
             <img src="../perfil.jpg" className="imgBox" alt="" />
           </header>
 
-            <main className="modal_content">
-              <TextField
-                className="custom-text-field"
-                fullWidth
-                autoFocus
-                type="text"
-                color="primary"
-                margin="normal"
-                variant="outlined"
-                label="Usuario"
-                placeholder="Usuario"
-                name="user"
-                value={values.user}
-                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
-                onChange={handleChange}
-                onKeyDown={handleKeyPress}
-              />
-              <TextField
-                className="custom-text-field"
-                fullWidth
-                type="password"
-                color="primary"
-                margin="normal"
-                variant="outlined"
-                label="Contraseña"
-                placeholder="Contraseña"
-                name="password"
-                value={values.password}
-                style={{ backgroundColor: '#ffffff4d', borderRadius: '3px'}}
-                onChange={handleChange}
-                onKeyDown={handleKeyPress}
-              />
+          <main className="modal_content">
+            <TextField
+              className="custom-text-field"
+              fullWidth
+              autoFocus
+              type="text"
+              color="primary"
+              margin="normal"
+              variant="outlined"
+              label="Usuario o Correo"
+              placeholder="Usuario o Correo"
+              name="userOrEmail" // Se usa un solo nombre para el input
+              value={values.userOrEmail}
+              style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+              onChange={handleChange}
+              onKeyDown={handleKeyPress}
+            />
+            <TextField
+              className="custom-text-field"
+              fullWidth
+              type="password"
+              color="primary"
+              margin="normal"
+              variant="outlined"
+              label="Contraseña"
+              placeholder="Contraseña"
+              name="password"
+              value={values.password}
+              style={{ backgroundColor: '#ffffff4d', borderRadius: '3px' }}
+              onChange={handleChange}
+              onKeyDown={handleKeyPress}
+            />
 
-              <Link
-                className="desbloq"
-                to={"/desbloqueo"}>
-                DESBLOQUEAR
-              </Link>
-            </main>
+            <Link
+              className="desbloq"
+              to={"/desbloqueo"}>
+              DESBLOQUEAR
+            </Link>
+          </main>
 
           <footer className="modal_footer">
             <Button
